@@ -53,7 +53,7 @@ export function ChatInterface() {
   };
 
   return (
-    <Card className="flex h-[600px] flex-col w-[80%] m-auto">
+    <Card className="flex h-[96vh] flex-col ">
       <ScrollArea className="flex-1 p-4">
         <AnimatePresence initial={false}>
           {messages.map((message) => (
