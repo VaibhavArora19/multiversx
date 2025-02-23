@@ -3,9 +3,20 @@
 import { ModeToggle } from "@/components/(ui)/mode-toggle";
 import { Button } from "@/components/ui/button";
 import { Bell } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { CrossWindowLoginButton, ExtensionLoginButton } from "@multiversx/sdk-dapp/UI";
+import { usePathname } from "next/navigation";
+import { OnProviderLoginType } from "@multiversx/sdk-dapp/types";
 
 export function Navbar({ title }: { title: string }) {
+  const pathName = usePathname();
+
+  const commonProps: OnProviderLoginType = {
+    callbackRoute: pathName,
+    nativeAuth: true,
+  };
+
+  // const loginHandler = async () => {};
+
   return (
     <header className="border-b">
       <div className="flex h-16 items-center px-4 gap-4">
@@ -16,10 +27,8 @@ export function Navbar({ title }: { title: string }) {
           <Bell className="h-5 w-5" />
         </Button>
         <ModeToggle />
-        <Avatar>
-          <AvatarImage src="/placeholder.svg" alt="User" />
-          <AvatarFallback>U</AvatarFallback>
-        </Avatar>
+        <ExtensionLoginButton loginButtonText="Login" {...commonProps} />
+        {/* <CrossWindowLoginButton loginButtonText="Login" {...commonProps} /> */}
       </div>
     </header>
   );
