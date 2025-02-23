@@ -3,19 +3,25 @@
 import { ModeToggle } from "@/components/(ui)/mode-toggle";
 import { Button } from "@/components/ui/button";
 import { Bell } from "lucide-react";
-import { CrossWindowLoginButton, ExtensionLoginButton } from "@multiversx/sdk-dapp/UI";
 import { usePathname } from "next/navigation";
 import { OnProviderLoginType } from "@multiversx/sdk-dapp/types";
+import * as DappUI from "@multiversx/sdk-dapp/UI";
+import { logout } from "@multiversx/sdk-dapp/utils";
+import {
+  useGetAccount, // if you only need the account as on network
+} from "@multiversx/sdk-dapp/hooks/account";
 
 export function Navbar({ title }: { title: string }) {
+  const account = useGetAccount();
+
+  console.log("acc is", account);
+
   const pathName = usePathname();
 
   const commonProps: OnProviderLoginType = {
     callbackRoute: pathName,
     nativeAuth: true,
   };
-
-  // const loginHandler = async () => {};
 
   return (
     <header className="border-b">
@@ -27,8 +33,15 @@ export function Navbar({ title }: { title: string }) {
           <Bell className="h-5 w-5" />
         </Button>
         <ModeToggle />
-        <ExtensionLoginButton loginButtonText="Login" {...commonProps} />
-        {/* <CrossWindowLoginButton loginButtonText="Login" {...commonProps} /> */}
+        {!account.address ? (
+          <>
+            <DappUI.CrossWindowLoginButton loginButtonText="Login" {...commonProps} />
+          </>
+        ) : (
+          <Button onClick={() => logout(pathName)}>
+            {account.address.substring(0, 5) + "..." + account.address.substring(account.address.length - 5)}
+          </Button>
+        )}
       </div>
     </header>
   );
