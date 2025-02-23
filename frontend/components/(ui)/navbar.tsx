@@ -35,7 +35,12 @@ export function Navbar({ title }: { title: string }) {
         <ModeToggle />
         {!account.address ? (
           <>
-            <DappUI.CrossWindowLoginButton loginButtonText="Login" {...commonProps} />
+            <DappUI.CrossWindowLoginButton
+              loginButtonText="Login"
+              {...commonProps}
+              buttonClassName="bg-white text-black"
+              className="bg-white text-black"
+            />
           </>
         ) : (
           <Button onClick={() => logout(pathName)}>

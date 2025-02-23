@@ -9,8 +9,6 @@ const nextConfig = {
   webpack: (config, options) => {
     if (!options.isServer) {
       config.resolve.fallback.fs = false;
-      config.resolve.fallback.net = false;
-      config.resolve.fallback.tls = false;
     }
     config.externals.push("pino-pretty", "lokijs", "encoding");
 
