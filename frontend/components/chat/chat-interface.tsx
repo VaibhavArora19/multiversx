@@ -8,6 +8,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send } from "lucide-react";
+import { useSendMessage } from "@/hooks/send-message";
+import { useGetAgents } from "@/hooks/agent";
+import { RotatingLines } from "react-loader-spinner";
 
 interface Message {
   id: number;
@@ -17,6 +20,9 @@ interface Message {
 }
 
 export function ChatInterface() {
+  const { mutateAsync } = useSendMessage();
+  const { data } = useGetAgents();
+  const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
@@ -27,7 +33,7 @@ export function ChatInterface() {
   ]);
   const [input, setInput] = useState("");
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input.trim()) return;
 
     // Add user message
@@ -38,18 +44,22 @@ export function ChatInterface() {
       timestamp: new Date(),
     };
     setMessages((prev) => [...prev, userMessage]);
+    setIsLoading(true);
     setInput("");
 
-    // Simulate AI response
-    setTimeout(() => {
-      const aiMessage: Message = {
-        id: messages.length + 2,
-        content: "I understand you're interested in DeFi. Let me help you with that!",
-        sender: "ai",
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, aiMessage]);
-    }, 1000);
+    const response = await mutateAsync({ agentId: data.agents[0].id, message: userMessage.content });
+
+    setIsLoading(false);
+
+    // console.log("agents are: ", agents);
+
+    const aiMessage: Message = {
+      id: messages.length + 2,
+      content: response[0].text,
+      sender: "ai",
+      timestamp: new Date(),
+    };
+    setMessages((prev) => [...prev, aiMessage]);
   };
 
   return (
@@ -76,6 +86,24 @@ export function ChatInterface() {
               </div>
             </motion.div>
           ))}
+          {isLoading && (
+            <div className={`flex max-w-[80%] items-start gap-3`}>
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={"/ai-avatar.png"} />
+                <AvatarFallback>{"AI"}</AvatarFallback>
+              </Avatar>
+              <div className={`rounded-lg ${"bg-muted"}`}>
+                <RotatingLines
+                  visible={true}
+                  width="30"
+                  strokeWidth="5"
+                  animationDuration="0.55"
+                  ariaLabel="rotating-lines-loading"
+                  strokeColor="#608BC1"
+                />
+              </div>
+            </div>
+          )}
         </AnimatePresence>
       </ScrollArea>
       <div className="border-t p-4">

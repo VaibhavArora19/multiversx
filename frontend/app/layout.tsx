@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { EnvironmentsEnum } from "@multiversx/sdk-dapp/types";
 import { AxiosInterceptorContext } from "@multiversx/sdk-dapp/wrappers/AxiosInterceptorContext";
 import { DappProvider } from "@multiversx/sdk-dapp/wrappers/DappProvider/DappProvider";
+import QueryProvider from "@/context/queryProvider";
 
 export default function RootLayout({
   children,
@@ -23,7 +24,7 @@ export default function RootLayout({
                 <SidebarProvider>
                   <AppSidebar />
                   <SidebarTrigger />
-                  {children}
+                  <QueryProvider>{children}</QueryProvider>
                 </SidebarProvider>
               </AxiosInterceptorContext.Interceptor>
             </AxiosInterceptorContext.Provider>
