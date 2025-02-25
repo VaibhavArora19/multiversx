@@ -49,17 +49,23 @@ export function ChatInterface() {
 
     const response = await mutateAsync({ agentId: data.agents[0].id, message: userMessage.content });
 
+    console.log("response is", response);
+
     setIsLoading(false);
 
-    // console.log("agents are: ", agents);
+    const aiMessages: Message[] = [];
 
-    const aiMessage: Message = {
-      id: messages.length + 2,
-      content: response[0].text,
-      sender: "ai",
-      timestamp: new Date(),
-    };
-    setMessages((prev) => [...prev, aiMessage]);
+    for (let i = 0; i < response.length; i++) {
+      const aiMessage: Message = {
+        id: messages.length + i + 2,
+        content: response[i].text,
+        sender: "ai",
+        timestamp: new Date(),
+      };
+
+      aiMessages.push(aiMessage);
+    }
+    setMessages((prev) => [...prev, ...aiMessages]);
   };
 
   return (
