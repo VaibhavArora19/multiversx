@@ -35,3 +35,7 @@ export const lendTokenSchema = z.object({
     tokenName: z.string().min(1, {message: "token name is required"}),
     amount: z.number().positive({message: 'Amount must be a positive number'})
 })
+
+export const copyTradeSchema = z.object({
+    walletAddress: z.string().min(1, {message: "Wallet address is required."})
+})

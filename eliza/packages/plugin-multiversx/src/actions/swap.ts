@@ -29,7 +29,7 @@ import { filteredTokensQuery } from "../graphql/tokensQuery";
 import { isUserAuthorized } from "../utils/accessTokenManagement";
 
 
-type SwapResultType = {
+export type SwapResultType = {
     swap: {
         noAuthTransactions: {
             value: string;
@@ -238,6 +238,8 @@ export default {
                 tolerance: 0.01,
                 sender: address,
             };
+
+            elizaLogger.info('varaibles are: ', variables);
 
             const { swap } = await graphqlProvider.query<SwapResultType>(
                 swapQuery,
