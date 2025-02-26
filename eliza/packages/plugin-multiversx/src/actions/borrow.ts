@@ -19,7 +19,7 @@ export interface CreateTokenContent extends Content {
     amount: number;
 }
 import { isUserAuthorized } from "../utils/accessTokenManagement";
-import { lendToken } from "../utils/lend";
+import { borrowToken } from "../utils/borrow";
 
 const createTokenTemplate = `Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
 
@@ -41,14 +41,14 @@ Given the recent messages, extract the following information about the requested
 Respond with a JSON markdown block containing only the extracted values.`;
 
 export default {
-    name: "LEND_TOKEN",
-    similes: ["SUPPLY_TOKEN"],
+    name: "BORROW_TOKEN",
+    similes: ["BORROW_TOKEN"],
     validate: async (runtime: IAgentRuntime, message: Memory) => {
         elizaLogger.log("Validating config for user:", message.userId);
         await validateMultiversxConfig(runtime);
         return true;
     },
-    description: "Lend a token.",
+    description: "Borrow a token.",
     handler: async (
         runtime: IAgentRuntime,
         message: Memory,
@@ -56,18 +56,18 @@ export default {
         _options: { [key: string]: unknown },
         callback?: HandlerCallback
     ) => {
-        elizaLogger.log("Starting LEND_TOKEN handler...");
+        elizaLogger.log("Starting BORROW_TOKEN handler...");
 
         elizaLogger.log("Handler initialized. Checking user authorization...");
 
         if (!isUserAuthorized(message.userId, runtime)) {
             elizaLogger.error(
-                "Unauthorized user attempted to lend a token:",
+                "Unauthorized user attempted to borrow a token:",
                 message.userId
             );
             if (callback) {
                 callback({
-                    text: "You do not have permission to lend a token.",
+                    text: "You do not have permission to borrow a token.",
                     content: { error: "Unauthorized user" },
                 });
             }
@@ -109,11 +109,11 @@ export default {
 
         // Validate transfer content
         if (!isCreateTokenContent) {
-            elizaLogger.error("Invalid content for LEND_TOKEN action.");
+            elizaLogger.error("Invalid content for BORROW_TOKEN action.");
             if (callback) {
                 callback({
-                    text: "Unable to process lend request. Invalid content provided.",
-                    content: { error: "Invalid lend content" },
+                    text: "Unable to process borrow request. Invalid content provided.",
+                    content: { error: "Invalid borrow content" },
                 });
             }
             return false;
@@ -126,8 +126,8 @@ export default {
 
             const walletProvider = new WalletProvider(privateKey, network);
 
-            //!lend here, pass on the token as well later on
-            const txHash = await lendToken(walletProvider, payload.amount);
+            //!borrow here, pass on the token as well later on
+            const txHash = await borrowToken(walletProvider, payload.amount);
 
             const txURL = walletProvider.getTransactionURL(txHash);
             callback?.({
@@ -152,14 +152,14 @@ export default {
             {
                 user: "{{user1}}",
                 content: {
-                    text: "Lend 0.3 EGLD tokens for me",
-                    action: "LEND_TOKEN",
+                    text: "Borrow EGLD tokens of amount 0.3",
+                    action: "BORROW_TOKEN",
                 },
             },
             {
                 user: "MVSX_Bot",
                 content: {
-                    text: "Successfully lent token.",
+                    text: "Successfully borrowed token.",
                 },
             },
         ],
@@ -167,14 +167,14 @@ export default {
             {
                 user: "{{user1}}",
                 content: {
-                    text: "Lend 100 XTREME with ticker XTR",
-                    action: "LEND_TOKEN",
+                    text: "Borrw 100 WTAO",
+                    action: "BORROW_TOKEN",
                 },
             },
             {
                 user: "MVSX_Bot",
                 content: {
-                    text: "Successfully lent token.",
+                    text: "Successfully borrowed token.",
                 },
             },
         ],
@@ -182,14 +182,14 @@ export default {
             {
                 user: "{{user1}}",
                 content: {
-                    text: "LEND a token TEST with ticker TST of value 2000",
-                    action: "LEND_TOKEN",
+                    text: "Borrow a token TEST with ticker TST of amount 2000",
+                    action: "BORROW_TOKEN",
                 },
             },
             {
                 user: "MVSX_Bot",
                 content: {
-                    text: "Successfully lent token.",
+                    text: "Successfully borrowed token.",
                 },
             },
         ],
