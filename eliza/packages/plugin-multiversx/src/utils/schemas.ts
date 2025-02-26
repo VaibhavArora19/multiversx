@@ -30,3 +30,8 @@ export const swapSchema = z.object({
     amountIn: z.string().min(1, { message: "Amount is required." }),
     tokenOut: z.string().min(1, { message: "Second token is required." }),
 });
+
+export const lendTokenSchema = z.object({
+    tokenName: z.string().min(1, {message: "token name is required"}),
+    amount: z.number().positive({message: 'Amount must be a positive number'})
+})

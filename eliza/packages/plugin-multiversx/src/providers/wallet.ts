@@ -51,6 +51,10 @@ export class WalletProvider {
         });
     }
 
+    public getProvider(): ApiNetworkProvider {
+        return this.apiNetworkProvider;
+    }
+
     /**
      * Retrieve the wallet address derived from the private key
      * @returns Address object

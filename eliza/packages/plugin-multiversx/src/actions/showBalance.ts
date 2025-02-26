@@ -78,12 +78,13 @@ export default {
 
             const balanceObject = {};
 
+            balanceObject['EGLD'] = balance;
+
 
             Object.keys(estdsBalance).forEach(key => {
                 balanceObject[key] = estdsBalance[key].balance;
             })
 
-            balanceObject['EGLD'] = balance;
 
             
             callback?.({
