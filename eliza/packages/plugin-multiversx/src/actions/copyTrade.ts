@@ -193,11 +193,6 @@ export default {
                     return;
                 }
 
-                // const value = denominateAmount({
-                //     amount: new BigNumber(nativeWalletBalance).multipliedBy(token.percentage / 100).toString(),
-                //     decimals: -18,
-                // });
-
                 
                 let variables: TVariables = {
                     amountIn: new BigNumber(nativeWalletBalance).multipliedBy(token.percentage / 100).toString().split(".")[0],

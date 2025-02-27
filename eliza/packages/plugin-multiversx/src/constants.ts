@@ -36,3 +36,38 @@ export const identifiers = {
         identifier: 'HHTM-f26787'
     }
 }
+
+export const healthScores = [
+    {
+        identifier: "EGLD",
+        score: 90,
+    },
+    {
+        identifier: 'WEGLD',
+        score: 90,
+    },
+    {
+        identifier: "USDC",
+        score: 100,
+    },
+    {
+        identifier: "USDT",
+        score: 100
+    },
+    {
+        identifier: "WTAO",
+        score: 70
+    },
+    {
+        identifier: "TAO",
+        score: 70
+    },
+    {
+        identifier: 'WBTC',
+        score: 95,
+    },
+    {
+        identifier: "WETH",
+        score: 60 
+    }
+]
