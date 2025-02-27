@@ -1,33 +1,42 @@
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
 
-const transactions = [
-  {
-    id: 1,
-    type: "Swap",
-    amount: "1.5 ETH",
-    value: "$2,832.15",
-    timestamp: "2 hours ago",
-    status: "completed",
-  },
-  {
-    id: 2,
-    type: "Deposit",
-    amount: "500 USDC",
-    value: "$500.00",
-    timestamp: "5 hours ago",
-    status: "completed",
-  },
-  {
-    id: 3,
-    type: "Withdraw",
-    amount: "0.5 ETH",
-    value: "$944.05",
-    timestamp: "1 day ago",
-    status: "completed",
-  },
-];
+// const transactions = [
+//   {
+//     id: 1,
+//     type: "Swap",
+//     amount: "1.5 ETH",
+//     value: "$2,832.15",
+//     timestamp: "2 hours ago",
+//     status: "completed",
+//   },
+//   {
+//     id: 2,
+//     type: "Deposit",
+//     amount: "500 USDC",
+//     value: "$500.00",
+//     timestamp: "5 hours ago",
+//     status: "completed",
+//   },
+//   {
+//     id: 3,
+//     type: "Withdraw",
+//     amount: "0.5 ETH",
+//     value: "$944.05",
+//     timestamp: "1 day ago",
+//     status: "completed",
+//   },
+// ];
 
-export function RecentTransactions() {
+export type TTransaction = {
+  id: string;
+  type: string;
+  amount: string;
+  value: string;
+  timestamp: string;
+  status: string;
+}[];
+
+export function RecentTransactions({ transactions }: { transactions: TTransaction }) {
   return (
     <div className="space-y-4">
       {transactions.map((tx) => (

@@ -5,3 +5,11 @@ export enum MESSAGE {
 export enum AGENT {
   GET_AGENTS = "GET_AGENTS",
 }
+
+export enum BALANCE {
+  GET_BALANCE = "GET_BALANCE",
+}
+
+export enum TRANSACTION {
+  GET_TRANSACTIONS = "GET_TRANSACTIONS",
+}

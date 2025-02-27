@@ -3,10 +3,60 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Overview } from "@/components/dashboard/overview";
 import { RecentTransactions } from "@/components/dashboard/recent-transactions";
-import { AssetAllocation } from "@/components/dashboard/asset-allocation";
+import { AssetAllocation, TData } from "@/components/dashboard/asset-allocation";
 import { motion } from "framer-motion";
+import { useGetBalance } from "@/hooks/balance";
+import { useEffect, useState } from "react";
+import { useGetTransactions } from "@/hooks/transactions";
+import { ethers } from "ethers";
 
 export function PortfolioOverview() {
+  const [balance, setBalance] = useState("0");
+  const { data, isFetched } = useGetBalance();
+  const { data: transactions, isFetched: isFetchedTransactions } = useGetTransactions();
+  const [chartData, setChartData] = useState<any[]>([]);
+  const [txData, setTxData] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (isFetched && data) {
+      let sum = 0;
+      const chart: TData = [];
+
+      data.forEach((d) => {
+        sum = sum + (d?.valueUsd ? d?.valueUsd : 0);
+        chart.push({
+          name: d?.ticker,
+          valueUsd: d?.valueUsd ?? 0,
+        });
+      });
+
+      setBalance(sum.toFixed(4));
+      setChartData(chart as TData);
+    }
+  }, [isFetched]);
+
+  useEffect(() => {
+    if (isFetchedTransactions && transactions) {
+      const txDataa: any[] = [];
+
+      console.log("txxx", transactions);
+
+      transactions[0].forEach((d) => {
+        txDataa.push({
+          id: d.txHash,
+          type: d.function,
+          amount: (+ethers.formatEther(d?.value ?? 0)).toFixed(4) + " EGLD",
+          value: (+ethers.formatEther(d?.value ?? 0) * 22).toFixed(4) + "$",
+          timestamp: new Date(d.timestamp * 1000).toDateString(),
+        });
+      });
+
+      console.log("transactions: ", txDataa);
+
+      setTxData(txDataa.slice(0, 8));
+    }
+  }, [isFetchedTransactions]);
+
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mt-12">
       <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3 }}>
@@ -15,7 +65,7 @@ export function PortfolioOverview() {
             <CardTitle className="text-sm font-medium">Total Balance</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$45,231.89</div>
+            <div className="text-2xl font-bold">${balance && balance}</div>
             <p className="text-xs text-muted-foreground">+20.1% from last month</p>
           </CardContent>
         </Card>
@@ -27,8 +77,8 @@ export function PortfolioOverview() {
             <CardTitle className="text-sm font-medium">Total Profit/Loss</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-500">+$12,234.56</div>
-            <p className="text-xs text-muted-foreground">+15.2% all time</p>
+            <div className="text-2xl font-bold text-green-500">+$27.56</div>
+            <p className="text-xs text-muted-foreground">+15.2% from yesterday</p>
           </CardContent>
         </Card>
       </motion.div>
@@ -36,11 +86,11 @@ export function PortfolioOverview() {
       <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3, delay: 0.2 }}>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Positions</CardTitle>
+            <CardTitle className="text-sm font-medium">Health score</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">12</div>
-            <p className="text-xs text-muted-foreground">Across 5 protocols</p>
+            <div className="text-2xl font-bold">85%</div>
+            <p className="text-xs text-muted-foreground">4% up from yesterday</p>
           </CardContent>
         </Card>
       </motion.div>
@@ -48,11 +98,11 @@ export function PortfolioOverview() {
       <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3, delay: 0.3 }}>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Gas Spent</CardTitle>
+            <CardTitle className="text-sm font-medium">Total deposited</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$123.45</div>
-            <p className="text-xs text-muted-foreground">Last 30 days</p>
+            <div className="text-2xl font-bold">$7.4</div>
+            <p className="text-xs text-muted-foreground">Total lent: $2.3</p>
           </CardContent>
         </Card>
       </motion.div>
@@ -76,7 +126,7 @@ export function PortfolioOverview() {
             <CardDescription>Current portfolio distribution</CardDescription>
           </CardHeader>
           <CardContent>
-            <AssetAllocation />
+            <AssetAllocation data={chartData && chartData} />
           </CardContent>
         </Card>
       </motion.div>
@@ -88,7 +138,7 @@ export function PortfolioOverview() {
             <CardDescription>Your latest DeFi activities</CardDescription>
           </CardHeader>
           <CardContent>
-            <RecentTransactions />
+            <RecentTransactions transactions={txData} />
           </CardContent>
         </Card>
       </motion.div>
