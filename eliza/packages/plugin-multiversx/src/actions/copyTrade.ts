@@ -23,6 +23,7 @@ import { NativeAuthProvider } from "../providers/nativeAuth";
 import { GraphqlProvider } from "../providers/graphql";
 import { denominateAmount } from "../utils/amount";
 import { swapToken, TVariables } from "../utils/copy";
+import BigNumber from "bignumber.js";
 
 const copyTradeTemplate = `Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
 
@@ -42,7 +43,7 @@ Respond with a JSON markdown block containing only the extracted values.`;
 
 export default {
     name: "COPY_TRADE",
-    similes: ["COPY_TOKEN", "COPY", "COPY_WALLET"],
+    similes: ["COPY_TOKEN", "COPY", "COPY_WALLET", "COPY_TOKENS"],
     validate: async (runtime: IAgentRuntime, message: Memory) => {
         elizaLogger.log("Validating config for user:", message.userId);
         await validateMultiversxConfig(runtime);
@@ -126,7 +127,45 @@ export default {
             const networkConfig = MVX_NETWORK_CONFIG[network];
             const walletProvider = new WalletProvider(privateKey, network);
 
-            //!fetch all the tokens held by the wallet here and then distribute the current wallet egld balance in percentage in respect to other tokens
+            //*fetch the balance of each token in wallet and their percentage
+
+            const balance = await walletProvider.getBalanceForWallet(payload.walletAddress);
+            const estdsBalance = await walletProvider.getTokensData(payload.walletAddress) as Array<any>;
+
+            const tokensArray = [
+                {
+                    tokenName: 'EGLD',
+                    balanceUSD: Number(new BigNumber(balance).shiftedBy(-18).toFixed(4)) * 21,
+                    percentage: 0,
+                    identifier: 'EGLD'
+                }
+            ];
+
+            estdsBalance.forEach((data) => {
+                tokensArray.push({
+                    tokenName: data.ticker,
+                    balanceUSD: data?.valueUsd ?? 0,
+                    percentage: 0,
+                    identifier: data.identifier,
+                })
+            })
+
+            let sum = 0;
+
+            tokensArray.forEach(token => sum += token.balanceUSD);
+            
+            elizaLogger.info('sum is: ', sum.toString());
+
+            const tokensBalance = tokensArray.map(data => {
+                return {
+                    ...data,
+                    percentage: (data.balanceUSD / sum) * 100,
+                }
+            });
+
+            elizaLogger.info('tokens array: ', tokensBalance);
+
+            //*wallet balance fetching ends here
 
 
             const nativeAuthProvider = new NativeAuthProvider({
@@ -136,6 +175,10 @@ export default {
             await nativeAuthProvider.initializeClient();
             const address = walletProvider.getAddress().toBech32();
 
+            const nativeWalletBalance = await walletProvider.getBalanceForWallet(address);
+
+            elizaLogger.info('native wallet balance: ', nativeWalletBalance.toString());
+            
             const accessToken =
                 await nativeAuthProvider.getAccessToken(walletProvider);
 
@@ -144,28 +187,38 @@ export default {
                 { Authorization: `Bearer ${accessToken}` },
             );
 
+            const funcArray = tokensBalance.map((token) => {
 
-            const value = denominateAmount({
-                amount: 'amount of egld to send each round',
-                decimals: 18,
+                if(token.percentage == 0 || token.identifier== "EGLD" || token.identifier === "WEGLD-a28c59" || token.percentage < 7) {
+                    return;
+                }
+
+                // const value = denominateAmount({
+                //     amount: new BigNumber(nativeWalletBalance).multipliedBy(token.percentage / 100).toString(),
+                //     decimals: -18,
+                // });
+
+                
+                let variables: TVariables = {
+                    amountIn: new BigNumber(nativeWalletBalance).multipliedBy(token.percentage / 100).toString().split(".")[0],
+                    tokenInID: "EGLD",
+                    tokenOutID: token.identifier,
+                    tolerance: 0.01,
+                    sender: address,
+                }
+
+                elizaLogger.info('variables are: ', variables);
+
+                return swapToken(walletProvider, graphqlProvider, variables);
             });
 
-            let variables: TVariables = {
-                amountIn: value,
-                tokenInID: "EGLD",
-                tokenOutID: 'we will soon find out',
-                tolerance: 0.01,
-                sender: address,
-            }
+            const txUrls = await Promise.all(funcArray);
 
-            //!do this inside a loop for X no of tokens
-            await swapToken(walletProvider, graphqlProvider, variables);
-                        
-            //!here goes the implementation of the copytrade
+            const transactionHashes = txUrls.join(",")
 
-            // callback?.({
-            //     text: `Transaction sent successfully! You can view it here: ${txURL}.`,
-            // });
+            callback?.({
+                text: `Transaction sent successfully! You can view it here: ${transactionHashes}.`,
+            });
             return true;
         } catch (error) {
             elizaLogger.error("Error during creating token:", error);
@@ -184,14 +237,14 @@ export default {
             {
                 user: "{{user1}}",
                 content: {
-                    text: "Create a token XTREME with ticker XTR and supply of 10000",
-                    action: "CREATE_TOKEN",
+                    text: "Copy trade this address erd13gh9ecruu4kg2r76ts8w64jzk2q8etxcev3w32j788fjpfg2kk0qjw8d20",
+                    action: "COPY_TRADE",
                 },
             },
             {
-                user: "{{user2}}",
+                user: "MVSX_Bot",
                 content: {
-                    text: "Successfully created token.",
+                    text: "Successfully copy traded the wallet address.",
                 },
             },
         ],
@@ -199,14 +252,14 @@ export default {
             {
                 user: "{{user1}}",
                 content: {
-                    text: "Create a token TEST with ticker TST, 18 decimals and supply of 10000",
-                    action: "CREATE_TOKEN",
+                    text: "Can you copy all the tokens from this wallet erd13gh9ecruu4kg2r76ts8w64jzk2q8etxcev3w32j788fjpfg2kk0qjw8d20",
+                    action: "COPY_TRADE",
                 },
             },
             {
-                user: "{{user2}}",
+                user: "MVSX_Bot",
                 content: {
-                    text: "Successfully created token.",
+                    text: "Successfully copied all the tokens from this wallet.",
                 },
             },
         ],

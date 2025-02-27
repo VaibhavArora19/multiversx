@@ -73,6 +73,12 @@ export class WalletProvider {
         return account.balance.toString(); // Return balance as a string
     }
 
+    public async getBalanceForWallet(address: string): Promise<string> {
+        const addr = new Address(Address.fromBech32(address));
+        const account = await this.getAccount(addr);
+        return account.balance.toString();
+    }
+
     /**
      * Fetch the wallet's current EGLD balance
      * @returns Promise resolving to the wallet's balance as a string
@@ -404,5 +410,21 @@ export class WalletProvider {
         const response = await data.json();
 
         return response?.data?.esdts;
+    }
+
+    public async getESDTSBalanceForWallet(address: string) {
+        const data = await fetch(`https://devnet-api.multiversx.com/address/${address}/esdt `);
+
+        const response = await data.json();
+
+        return response?.data?.esdts;
+    }
+
+    public async getTokensData(address: string) {
+        const data = await fetch(`https://devnet-api.multiversx.com/accounts/${address}/tokens`);
+
+        const response = await data.json();
+
+        return response;
     }
 }
