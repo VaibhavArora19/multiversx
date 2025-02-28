@@ -11,7 +11,7 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader className="border-b p-4">
-        <h2 className="text-lg font-semibold">DeFi Companion</h2>
+        <h2 className="text-lg font-semibold">DeFiVerse</h2>
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
@@ -41,17 +41,17 @@ export function AppSidebar() {
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <Link href="/wallet">
+              <Link href="/whales">
                 <Wallet className="h-4 w-4" />
-                <span>Wallet</span>
+                <span>Top Wallets</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <Link href="/settings">
+              <Link href="/">
                 <Settings className="h-4 w-4" />
-                <span>Settings</span>
+                <span>Invest</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

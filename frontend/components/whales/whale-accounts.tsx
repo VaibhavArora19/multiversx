@@ -6,103 +6,112 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
-import { Check, Copy, TrendingUp } from "lucide-react";
+import { Check, Copy, Loader2, TrendingUp } from "lucide-react";
 import { TokenHoldings } from "@/components/whales/token-holdings";
 import { useToast } from "@/components/ui/toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useGetWhales } from "@/hooks/whales";
 
 // Mock data for whale accounts
-const whaleAccounts = [
-  {
-    id: "whale1",
-    address: "0x1234...5678",
-    name: "Mega Whale",
-    totalValue: "$12,450,000",
-    performance: "+32.5%",
-    tokens: [
-      { symbol: "ETH", name: "Ethereum", amount: "1,245", value: "$2,980,000", percentage: 24 },
-      { symbol: "USDC", name: "USD Coin", amount: "2,500,000", value: "$2,500,000", percentage: 20 },
-      { symbol: "WBTC", name: "Wrapped Bitcoin", amount: "28.5", value: "$1,710,000", percentage: 14 },
-      { symbol: "ARB", name: "Arbitrum", amount: "850,000", value: "$1,020,000", percentage: 8 },
-      { symbol: "OP", name: "Optimism", amount: "750,000", value: "$975,000", percentage: 8 },
-    ],
-    strategies: [
-      { name: "Liquid Staking", allocation: "30%" },
-      { name: "Yield Farming", allocation: "40%" },
-      { name: "Options Trading", allocation: "20%" },
-      { name: "Lending", allocation: "10%" },
-    ],
-    lastActive: "2 hours ago",
-    avatar: "/placeholder.svg?height=80&width=80",
-  },
-  {
-    id: "whale2",
-    address: "0xabcd...ef12",
-    name: "DeFi Maestro",
-    totalValue: "$8,750,000",
-    performance: "+28.7%",
-    tokens: [
-      { symbol: "ETH", name: "Ethereum", amount: "980", value: "$2,352,000", percentage: 27 },
-      { symbol: "MKR", name: "Maker", amount: "1,200", value: "$1,680,000", percentage: 19 },
-      { symbol: "AAVE", name: "Aave", amount: "12,500", value: "$1,125,000", percentage: 13 },
-      { symbol: "CRV", name: "Curve", amount: "1,500,000", value: "$750,000", percentage: 9 },
-      { symbol: "SNX", name: "Synthetix", amount: "350,000", value: "$700,000", percentage: 8 },
-    ],
-    strategies: [
-      { name: "Governance", allocation: "35%" },
-      { name: "Liquidity Providing", allocation: "45%" },
-      { name: "Staking", allocation: "20%" },
-    ],
-    lastActive: "5 hours ago",
-    avatar: "/placeholder.svg?height=80&width=80",
-  },
-  {
-    id: "whale3",
-    address: "0x7890...1234",
-    name: "Yield Hunter",
-    totalValue: "$5,250,000",
-    performance: "+41.2%",
-    tokens: [
-      { symbol: "ETH", name: "Ethereum", amount: "450", value: "$1,080,000", percentage: 21 },
-      { symbol: "COMP", name: "Compound", amount: "15,000", value: "$975,000", percentage: 19 },
-      { symbol: "UNI", name: "Uniswap", amount: "120,000", value: "$840,000", percentage: 16 },
-      { symbol: "LINK", name: "Chainlink", amount: "65,000", value: "$780,000", percentage: 15 },
-      { symbol: "MATIC", name: "Polygon", amount: "950,000", value: "$665,000", percentage: 13 },
-    ],
-    strategies: [
-      { name: "Yield Farming", allocation: "60%" },
-      { name: "Staking", allocation: "25%" },
-      { name: "Lending", allocation: "15%" },
-    ],
-    lastActive: "1 day ago",
-    avatar: "/placeholder.svg?height=80&width=80",
-  },
-];
+// const whaleAccounts = [
+//   {
+//     id: "whale1",
+//     address: "erd1c579aq6kjkhar6cyx8qm9k9wettxjcf3jncduwe0pllqx0rlczfskg3vk2",
+//     name: "Mega Whale",
+//     totalValue: "$180,172.75",
+//     performance: "+32.5%",
+//     tokens: [
+//       { symbol: "BBFY-1bb288", name: "Burnify", amount: "962,034.75", value: "$89,593.02", percentage: 49.5 },
+//       { symbol: "WEGLD", name: "Wrapped EGLD", amount: "2,795.18", value: "$67,954.04", percentage: 37.54 },
+//       { symbol: "MEX", name: "xMEX", amount: "987,249,994.27", value: "$23,294.91", percentage: 12.87 },
+//       { symbol: "RIDE", name: "RIDE", amount: "14,279.03", value: "$130.34", percentage: 0.42 },
+//       { symbol: "USDC", name: "USDC", amount: "0.375199", value: "$0.37", percentage: 0.39 },
+//     ],
+//     strategies: [
+//       { name: "Liquid Staking", allocation: "30%" },
+//       { name: "Yield Farming", allocation: "40%" },
+//       { name: "Options Trading", allocation: "20%" },
+//       { name: "Lending", allocation: "10%" },
+//     ],
+//     lastActive: "2 hours ago",
+//     avatar: "/placeholder.svg?height=80&width=80",
+//   },
+//   {
+//     id: "whale2",
+//     address: "erd1kc7v0lhqu0sclywkgeg4um8ea5nvch9psf2lf8t96j3w622qss8sav2zl8",
+//     name: "DeFi Maestro",
+//     totalValue: "$220,853.14",
+//     performance: "+28.7%",
+//     tokens: [
+//       { symbol: "XEGLD", name: "xEGLD", amount: "7,166.30", value: "$185,349.27", percentage: 84.43 },
+//       { symbol: "ITHEUM", name: "ITHEUM", amount: "60,948.81", value: "$33,692.25", percentage: 15.11 },
+//       { symbol: "USDC", name: "USDC", amount: "1,125.67", value: "$1,125.57", percentage: 0.52 },
+//       { symbol: "WEGLD", name: "Wrapped EGLD", amount: "12,500", value: "$1,019.87", percentage: 0.48 },
+//       { symbol: "HTM", name: "HATOM", amount: "33.07", value: "$134.72", percentage: 0.04 },
+//     ],
+//     strategies: [
+//       { name: "Governance", allocation: "35%" },
+//       { name: "Liquidity Providing", allocation: "45%" },
+//       { name: "Staking", allocation: "20%" },
+//     ],
+//     lastActive: "5 hours ago",
+//     avatar: "/placeholder.svg?height=80&width=80",
+//   },
+//   {
+//     id: "whale3",
+//     address: "erd1tjygwhw5ylmv3v52ucvhmz0q7r0hafz4cfndjaskss5ahz28l3hqdvxqct",
+//     name: "Yield Hunter",
+//     totalValue: "$647,461.46",
+//     performance: "+41.2%",
+//     tokens: [
+//       { symbol: "XEGLD", name: "xEGLD", amount: "4,200.97", value: "$647,461.48", percentage: 90.43 },
+//       { symbol: "USDC", name: "USDC", amount: "38,816.70", value: "$38,802.14", percentage: 4.21 },
+//       { symbol: "LEGLD", name: "Liquid EGLD", amount: "203.28", value: "$25,527.01", percentage: 3.49 },
+//       { symbol: "WEGLD", name: "Wrapped EGLD", amount: "98", value: "$24.30", percentage: 0.12 },
+//       { symbol: "ASH", name: "ASH", amount: "1243.44", value: "$23.33", percentage: 0.11 },
+//     ],
+//     strategies: [
+//       { name: "Yield Farming", allocation: "60%" },
+//       { name: "Staking", allocation: "25%" },
+//       { name: "Lending", allocation: "15%" },
+//     ],
+//     lastActive: "1 day ago",
+//     avatar: "/placeholder.svg?height=80&width=80",
+//   },
+// ];
 
 export function WhaleAccounts() {
+  const { data: whaleAccounts } = useGetWhales();
+
   const { toast } = useToast();
   const [copiedStates, setCopiedStates] = useState<Record<string, boolean>>({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleCopyStrategy = (whaleId: string) => {
+    setIsLoading(true);
+
+    setTimeout(() => {
+      setIsLoading(false);
+      setCopiedStates({ ...copiedStates, [whaleId]: true });
+    }, 3000);
     // Set copied state for animation
-    setCopiedStates({ ...copiedStates, [whaleId]: true });
 
     // Show toast notification
     toast({
       title: "Strategy copied!",
       description: "You've successfully copied this whale's strategy.",
-      duration: 3000,
+      duration: 5000,
     });
 
     // Reset copied state after animation
     setTimeout(() => {
       setCopiedStates({ ...copiedStates, [whaleId]: false });
-    }, 2000);
+    }, 7000);
   };
 
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {whaleAccounts.map((whale) => (
+      {whaleAccounts?.map((whale) => (
         <motion.div
           key={whale.id}
           initial={{ opacity: 0, y: 20 }}
@@ -142,22 +151,11 @@ export function WhaleAccounts() {
               </div>
 
               <Tabs defaultValue="tokens">
-                <TabsList className="grid w-full grid-cols-2">
+                <TabsList className="grid w-full grid-cols-1">
                   <TabsTrigger value="tokens">Top Tokens</TabsTrigger>
-                  <TabsTrigger value="strategies">Strategies</TabsTrigger>
                 </TabsList>
                 <TabsContent value="tokens" className="space-y-4 pt-3">
                   <TokenHoldings tokens={whale.tokens} />
-                </TabsContent>
-                <TabsContent value="strategies" className="pt-3">
-                  <div className="space-y-3">
-                    {whale.strategies.map((strategy, index) => (
-                      <div key={index} className="flex items-center justify-between">
-                        <p className="text-sm font-medium">{strategy.name}</p>
-                        <Badge variant="secondary">{strategy.allocation}</Badge>
-                      </div>
-                    ))}
-                  </div>
                 </TabsContent>
               </Tabs>
 
@@ -165,7 +163,12 @@ export function WhaleAccounts() {
             </CardContent>
             <CardFooter>
               <Button className="w-full relative" onClick={() => handleCopyStrategy(whale.id)}>
-                {copiedStates[whale.id] ? (
+                {isLoading ? (
+                  <span className="flex items-center">
+                    {" "}
+                    <Loader2 className="animate-spin" />{" "}
+                  </span>
+                ) : copiedStates[whale.id] ? (
                   <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center">
                     <Check className="mr-2 h-4 w-4" /> Copied!
                   </motion.span>

@@ -111,6 +111,8 @@ type ToasterToast = ToastOptions & {
   title?: string;
   description?: string;
   action?: React.ReactNode;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 };
 
 const actionTypes = {
