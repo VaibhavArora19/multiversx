@@ -39,3 +39,16 @@ export const lendTokenSchema = z.object({
 export const copyTradeSchema = z.object({
     walletAddress: z.string().min(1, {message: "Wallet address is required."})
 })
+
+export const investSchema = z.object({
+    riskTolerance: z.string().min(1, {message: "risk tolerance is required"}),
+    investmentAmount: z.number({message: "investment amount is required"}),
+    annualReturns: z.number().min(1).max(100, {message: "annual returns is required"}),
+    investmentTimeline: z.string().min(1, {message: "investment timeline is required"}),
+    defiExperience: z.string().min(1, {message: "defi experience is required"})
+})
+
+export const valueSchema = z.object({tokens: z.array(z.object({
+    identifier: z.string().min(1, {message: "identifier is required"}),
+    amount: z.string().min(1, {message: "amount is required"})
+}))})

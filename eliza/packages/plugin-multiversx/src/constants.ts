@@ -71,3 +71,37 @@ export const healthScores = [
         score: 60 
     }
 ]
+
+
+export const investment_assets = [
+    {
+        name: "EGLD",
+        riskTolerance: ['conservative', 'moderate'],
+        annualReturns: '10%-30%',
+        investmentTimeline: '1-2 years',
+    },
+    {
+        name: "USDC-350c4e",
+        riskTolerance: ['conservative'],
+        annualReturns: '15%-35%',
+        invstmentTimeline: "3 years"
+    },
+    {
+        name: 'WETH-bbe4ab',
+        riskTolerance: 'aggresive',
+        annualReturns: "2%-50%",
+        investimentTimeline: "1 year"
+    },
+    {
+        name: "WBTC-05fd5b",
+        riskTolerance: ['moderate', 'aggresive'],
+        annualReturns: '50%-100%',
+        investmentTimeline: '2 years'
+    },
+    {
+        name: "WTAO-f94e58",
+        riskTolerance: ['conservative'],
+        annualReturns: '30-50%',
+        investmentTimeline: "1 year"
+    }
+]
