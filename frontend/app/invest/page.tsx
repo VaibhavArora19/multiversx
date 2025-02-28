@@ -10,9 +10,6 @@ import { useGetBalance } from "@/hooks/balance";
 
 export default function ProfilePage() {
   const { data } = useGetNativeBalance();
-  // const { data } = useGetBalance();
-
-  console.log("native value is", data);
 
   return (
     <>

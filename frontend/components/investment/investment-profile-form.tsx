@@ -11,7 +11,10 @@ import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Check, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
-import { useToast } from "@/components/ui/toast";
+// import { useToast } from "@/components/ui/toast";
+import { ToastContainer, toast } from "react-toastify";
+import { useGetAgents } from "@/hooks/agent";
+import { useSendMessage } from "@/hooks/send-message";
 
 type FormStep = {
   title: string;
@@ -48,7 +51,9 @@ const formSteps: FormStep[] = [
 export function InvestmentProfileForm() {
   const [currentStep, setCurrentStep] = React.useState(0);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const { toast } = useToast();
+  const { mutateAsync } = useSendMessage();
+  //   const { toast } = useToast();
+  const { data } = useGetAgents();
 
   const [formData, setFormData] = React.useState({
     riskTolerance: "",
@@ -75,13 +80,20 @@ export function InvestmentProfileForm() {
   const handleSubmit = async () => {
     setIsSubmitting(true);
     // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    const prompt = `Create investment for me where my risk tolerance is ${formData.riskTolerance} and my investment budget is ${formData.investmentBudget} EGLD and my annual target returns 
+    is ${formData.targetReturn}% and my investment timeline is ${formData.timeline}. My experience in DeFi is ${formData.defiExperience}.`;
+
+    const response = await mutateAsync({ agentId: data.agents[0].id, message: prompt });
+
+    console.log("response is", response);
     setIsSubmitting(false);
-    toast({
-      title: "Profile Created!",
-      description: "Your investment profile has been saved. We'll now analyze the best positions for you.",
-      duration: 5000,
-    });
+    // toast({
+    //   title: "Profile Created!",
+    //   description: "Your investment profile has been saved. We'll now analyze the best positions for you.",
+    //   duration: 5000,
+    // });
+
+    toast.info("Your investment is successfully created!");
     // Reset form
     setCurrentStep(0);
     setFormData({
@@ -120,7 +132,7 @@ export function InvestmentProfileForm() {
         return (
           <div className="space-y-4">
             <div className="grid gap-2">
-              <Label htmlFor="budget">Investment Amount (USD)</Label>
+              <Label htmlFor="budget">Investment Amount (EGLD)</Label>
               <Input
                 id="budget"
                 placeholder="Enter amount"
@@ -211,53 +223,56 @@ export function InvestmentProfileForm() {
   };
 
   return (
-    <Card className="max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle>{formSteps[currentStep].title}</CardTitle>
-        <CardDescription>{formSteps[currentStep].description}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="mb-8">
-          <Progress value={progress} className="h-2" />
-        </div>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentStep}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.2 }}
-          >
-            {renderStepContent(currentStep)}
-          </motion.div>
-        </AnimatePresence>
-      </CardContent>
-      <CardFooter className="flex justify-between">
-        <Button variant="outline" onClick={handleBack} disabled={currentStep === 0 || isSubmitting}>
-          <ChevronLeft className="mr-2 h-4 w-4" />
-          Back
-        </Button>
-        {currentStep < formSteps.length - 1 ? (
-          <Button onClick={handleNext}>
-            Next
-            <ChevronRight className="ml-2 h-4 w-4" />
+    <>
+      <Card className="max-w-2xl mx-auto">
+        <CardHeader>
+          <CardTitle>{formSteps[currentStep].title}</CardTitle>
+          <CardDescription>{formSteps[currentStep].description}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="mb-8">
+            <Progress value={progress} className="h-2" />
+          </div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentStep}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.2 }}
+            >
+              {renderStepContent(currentStep)}
+            </motion.div>
+          </AnimatePresence>
+        </CardContent>
+        <CardFooter className="flex justify-between">
+          <Button variant="outline" onClick={handleBack} disabled={currentStep === 0 || isSubmitting}>
+            <ChevronLeft className="mr-2 h-4 w-4" />
+            Back
           </Button>
-        ) : (
-          <Button onClick={handleSubmit} disabled={isSubmitting}>
-            {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Submitting...
-              </>
-            ) : (
-              <>
-                <Check className="mr-2 h-4 w-4" />
-                Submit Profile
-              </>
-            )}
-          </Button>
-        )}
-      </CardFooter>
-    </Card>
+          {currentStep < formSteps.length - 1 ? (
+            <Button onClick={handleNext}>
+              Next
+              <ChevronRight className="ml-2 h-4 w-4" />
+            </Button>
+          ) : (
+            <Button onClick={handleSubmit} disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Submitting...
+                </>
+              ) : (
+                <>
+                  <Check className="mr-2 h-4 w-4" />
+                  Invest
+                </>
+              )}
+            </Button>
+          )}
+        </CardFooter>
+      </Card>
+      <ToastContainer />
+    </>
   );
 }
