@@ -13,6 +13,5 @@ export const useGetLendingData = () => {
     queryKey: ["lendingData"],
     queryFn: getLendingData,
     refetchOnWindowFocus: false,
-    staleTime: Infinity,
   });
 };

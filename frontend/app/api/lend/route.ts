@@ -1,7 +1,6 @@
-// import { UserSecretKey, UserSigner } from "@multiversx/sdk-core/out";
-
 import { controllerAddress, egldMoneyMarketAddress } from "@/constants";
 import { Address, AddressValue, ApiNetworkProvider, QueryRunnerAdapter, SmartContractQueriesController } from "@multiversx/sdk-core/out";
+import { ethers } from "ethers";
 
 const getLendingPositions = async () => {
   const address = "erd13gh9ecruu4kg2r76ts8w64jzk2q8etxcev3w32j788fjpfg2kk0qjw8d20";
@@ -28,21 +27,23 @@ const getLendingPositions = async () => {
 
   const response = await controller.runQuery(query);
 
-  console.log("response is: ", response);
-
   const [tokens] = controller.parseQueryResponse(response);
 
-  console.log("getaccounttokens: ", parseInt(Buffer.from(tokens).toString("hex"), 16)); //!the amount of hegld tokens you have deposited, divide it by 46.66 after parsing it with 8 decimals and you will get the amount of egld
-
-  return parseInt(Buffer.from(tokens).toString("hex"), 16);
+  return (
+    +Buffer.from(tokens).toString("hex") !== 0 && {
+      token: "EGLD",
+      amount: ethers.formatUnits(parseInt(Buffer.from(tokens).toString("hex"), 16).toString(), 8),
+      value: (Number(ethers.formatUnits(parseInt(Buffer.from(tokens).toString("hex"), 16).toString(), 8)) * 22) / 46.4,
+      apy: 13.2,
+      color: "bg-blue-500",
+    }
+  );
 };
 
 const getBorrowingPositions = async () => {
   const address = "erd13gh9ecruu4kg2r76ts8w64jzk2q8etxcev3w32j788fjpfg2kk0qjw8d20";
 
   const unformattedAddress = Address.fromBech32(address);
-
-  const egldAddress = Address.fromBech32(egldMoneyMarketAddress);
 
   const apiProv = new ApiNetworkProvider("https://devnet-api.multiversx.com");
 
@@ -62,21 +63,23 @@ const getBorrowingPositions = async () => {
 
   const response = await controller.runQuery(query);
 
-  console.log("response is: ", response);
-
   const [tokens] = controller.parseQueryResponse(response);
 
-  console.log("getaccounttokens: ", parseInt(Buffer.from(tokens).toString("hex"), 16)); //!the amount of hegld tokens you have deposited, divide it by 46.66 after parsing it with 8 decimals and you will get the amount of egld
-
-  return parseInt(Buffer.from(tokens).toString("hex"), 16);
+  return (
+    +Buffer.from(tokens).toString("hex") !== 0 && {
+      token: "EGLD",
+      amount: ethers.parseEther(parseInt(Buffer.from(tokens).toString("hex"), 16).toString()),
+      value: Number(ethers.parseEther(parseInt(Buffer.from(tokens).toString("hex"), 16).toString())) * 22,
+      apy: 13.2,
+      color: "bg-blue-500",
+    }
+  );
 };
 
 const getIsRisky = async () => {
   const address = "erd13gh9ecruu4kg2r76ts8w64jzk2q8etxcev3w32j788fjpfg2kk0qjw8d20";
 
   const unformattedAddress = Address.fromBech32(address);
-
-  //   const egldAddress = Address.fromBech32(controllerAddress);
 
   const apiProv = new ApiNetworkProvider("https://devnet-api.multiversx.com");
 
@@ -96,16 +99,9 @@ const getIsRisky = async () => {
 
   const response = await controller.runQuery(query);
 
-  console.log("response is: ", response);
-
   const [isRisky] = controller.parseQueryResponse(response);
 
-  console.log("is risky", +Buffer.from(isRisky).toString("hex"));
-
   return +Buffer.from(isRisky).toString("hex");
-  //   console.log("getaccounttokens: ", parseInt(Buffer.from(tokens).toString(""), 16)); //!the amount of hegld tokens you have deposited, divide it by 46.66 after parsing it with 8 decimals and you will get the amount of egld
-
-  //   return parseInt(Buffer.from(tokens).toString("hex"), 16);
 };
 
 export async function GET() {
@@ -113,13 +109,19 @@ export async function GET() {
 
   const borrowingPositionAmount = await getBorrowingPositions();
 
+  console.log("bb", borrowingPositionAmount);
+
+  const borrowedPositions = [];
+
+  borrowingPositionAmount && borrowedPositions.push(borrowingPositionAmount);
+
   const isRisky = await getIsRisky();
 
   return Response.json({
     status: 200,
     data: {
-      lendingPositionAmount,
-      borrowingPositionAmount,
+      suppliedPositions: [lendingPositionAmount],
+      borrowedPositions: borrowedPositions,
       isRisky,
     },
   });

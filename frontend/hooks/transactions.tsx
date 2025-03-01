@@ -16,6 +16,5 @@ export const useGetTransactions = () => {
     queryKey: [TRANSACTION.GET_TRANSACTIONS],
     queryFn: transactions,
     refetchOnWindowFocus: false,
-    staleTime: Infinity,
   });
 };
