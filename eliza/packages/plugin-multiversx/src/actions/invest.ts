@@ -90,7 +90,8 @@ const p = `
 
 # Task: Given the data fields from the previous values {{riskTolerance}} {{investmentAmount}} {{annualReturns}} {{investmentTimeline}} {{defiExperience}}. You need to generate the array
 called tokens which will contains objects. Each object will have 2 fields one is token identifier and the second is amount. identifier should be chosen from the {{secondArray}} and the amount
-should be some percentage of {{investmentAmount}}. For example if {{investmentAmount}} is 1 and amount is 30% of it then it will be 0.3. The sum of amount should be equal to {{investmentAmount}}. For example if you selected 2 tokens then the {{investmentAmount}} should be equal to the sum of those 2 tokens.You do not have to select all the tokens from the {{secondArray}} 2 to 3 tokens are enough.
+should be some percentage of {{investmentAmount}}. For example if {{investmentAmount}} is 1 and amount is 30% of it then it will be 0.3. The sum of amount should be equal to {{investmentAmount}}. For example if you selected 2 tokens then the {{investmentAmount}} should be equal to the sum of those 2 tokens.
+You do not have to select all the tokens from the {{secondArray}} 2 to 3 tokens are enough.
 Your result should be based on {{riskTolerance}} {{annualReturns}} and other fields that are provided to you. Match these values with the {{secondArray}} and then generate result.
 `
 
@@ -190,10 +191,6 @@ export default {
                  elizaLogger.info('response is', investmentContent)
 
                const mainPayload = investmentContent.object as CreateInvestmentMainContent
-
-
-
-
 
             const arr = mainPayload.tokens;
 
