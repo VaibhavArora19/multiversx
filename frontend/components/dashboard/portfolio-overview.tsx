@@ -109,11 +109,15 @@ export function PortfolioOverview() {
           <CardContent>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="font-medium">Current: {1.8}</span>
-                <span className={`text-sm ${false ? "text-red-500" : "text-green-500"}`}>{"Safe"}</span>
+                <span className="font-medium">Current: {lendingData && lendingData.isRisky == 1 ? 0.78 : 1.7}</span>
+                <span className={`text-sm ${false ? "text-red-500" : "text-green-500"}`}>{lendingData.isRisky == 1 ? "At Risk" : "Safe"}</span>
               </div>
-              <Progress value={Math.min((1.8 / 2) * 100, 100)} className="h-2" indicatorClassName={"bg-green-500"} />
-              {false && (
+              <Progress
+                value={Math.min((lendingData && lendingData.isRisky == 1 ? 0.78 : 1.8 / 2) * 100, 100)}
+                className="h-2"
+                indicatorClassName={lendingData.isRisky == 1 ? "bg-red-500" : "bg-green-500"}
+              />
+              {lendingData && lendingData.isRisky && (
                 <Alert variant="destructive">
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
