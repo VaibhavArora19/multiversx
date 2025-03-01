@@ -15,8 +15,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={` antialiased`}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`antialiased`}>
         <DappProvider environment={EnvironmentsEnum.mainnet} customNetworkConfig={{ walletConnectV2ProjectId: "f55bca5d6156779b877eaea025ef7a54" }}>
           <ThemeProvider attribute={"class"} defaultTheme="system" enableSystem disableTransitionOnChange>
             <AxiosInterceptorContext.Provider>
