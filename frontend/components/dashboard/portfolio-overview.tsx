@@ -6,9 +6,14 @@ import { RecentTransactions } from "@/components/dashboard/recent-transactions";
 import { AssetAllocation, TData } from "@/components/dashboard/asset-allocation";
 import { motion } from "framer-motion";
 import { useGetBalance } from "@/hooks/balance";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useGetTransactions } from "@/hooks/transactions";
 import { ethers } from "ethers";
+import { LendingOverview } from "../lend/lending-overview";
+import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
+import { useGetLendingData } from "@/hooks/lend-data";
 
 export function PortfolioOverview() {
   const [balance, setBalance] = useState("0");
@@ -16,6 +21,7 @@ export function PortfolioOverview() {
   const { data: transactions, isFetched: isFetchedTransactions } = useGetTransactions();
   const [chartData, setChartData] = useState<any[]>([]);
   const [txData, setTxData] = useState<any[]>([]);
+  const { data: lendingData } = useGetLendingData();
 
   useEffect(() => {
     if (isFetched && data) {
@@ -97,12 +103,25 @@ export function PortfolioOverview() {
 
       <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3, delay: 0.3 }}>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total deposited</CardTitle>
+          <CardHeader className="pb-3">
+            <CardTitle>Health Factor</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$7.4</div>
-            <p className="text-xs text-muted-foreground">Total lent: $2.3</p>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="font-medium">Current: {1.8}</span>
+                <span className={`text-sm ${false ? "text-red-500" : "text-green-500"}`}>{"Safe"}</span>
+              </div>
+              <Progress value={Math.min((1.8 / 2) * 100, 100)} className="h-2" indicatorClassName={"bg-green-500"} />
+              {false && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    Your health factor is low. Consider repaying some debt or adding more collateral to avoid liquidation.
+                  </AlertDescription>
+                </Alert>
+              )}
+            </div>
           </CardContent>
         </Card>
       </motion.div>
@@ -142,6 +161,7 @@ export function PortfolioOverview() {
           </CardContent>
         </Card>
       </motion.div>
+      <LendingOverview />
     </div>
   );
 }
