@@ -10,8 +10,8 @@ type PayloadType = {
 export const denominateAmount = ({ amount, decimals }: PayloadType) => {
     return new BigNumber(amount)
         .shiftedBy(decimals)
-        .decimalPlaces(0)
-        .toFixed(0);
+        .decimalPlaces(3)
+        .toFixed(3);
 };
 
 export const getRawAmount = ({ amount, decimals }: PayloadType) => {

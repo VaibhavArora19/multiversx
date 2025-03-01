@@ -21,6 +21,7 @@ export interface CreateTokenContent extends Content {
     amount: string;
 }
 import { isUserAuthorized } from "../utils/accessTokenManagement";
+import { denominateAmount } from "../utils/amount";
 
 
 export default {
@@ -74,21 +75,31 @@ export default {
             const walletProvider = new WalletProvider(privateKey, network);
 
             const balance = await walletProvider.getBalance();
-            const estdsBalance = await walletProvider.getESDTSBalance();
+            // const estdsBalance = await walletProvider.getESDTSBalance();
 
-            const balanceObject = {};
+            const estdsBalance = await walletProvider.getTokensData(walletProvider.getAddress().bech32());
 
-            balanceObject['EGLD'] = balance;
+            let balanceObject = [];
 
+            balanceObject.push({
 
-            Object.keys(estdsBalance).forEach(key => {
-                balanceObject[key] = estdsBalance[key].balance;
+                token: "EGLD",
+                balance: denominateAmount({amount: balance, decimals: -18}),
+                amount: +denominateAmount({amount: balance, decimals: -18}) * 22
             })
 
+            estdsBalance.forEach(data => {
+                balanceObject.push({
+                    token: data?.ticker,
+                    balance: denominateAmount({amount: data?.balance, decimals: -data?.decimals}),
+                    amount: "$"+(data?.valueUsd?.substring(0, 5) ?? 0)
+                })
+            })
 
-            
+            balanceObject.map(obj => JSON.stringify(obj, null, 2)).join('\n')
+
             callback?.({
-                text: `Your wallet address balance - \n ${JSON.stringify(balanceObject)}`,
+                text: `Your wallet address balance - \n ${balanceObject.map(obj => JSON.stringify(obj, null, 2)).join('\n')}`
             })
             return true;
         } catch (error) {
