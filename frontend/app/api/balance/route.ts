@@ -19,7 +19,7 @@ export async function GET() {
 
   const balance = acc.balance.toString();
 
-  const data = await fetch(`https://devnet-api.multiversx.com/accounts/${address}/tokens`);
+  const data = await fetch(`https://devnet-api.multiversx.com/accounts/${address}/tokens`, { cache: "no-store" });
 
   const response = await data.json();
 

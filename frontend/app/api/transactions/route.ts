@@ -12,7 +12,7 @@ export async function GET() {
 
   //   const acc = await apiProv.getAccount(unformattedAddress);
 
-  const data = await fetch(`https://devnet-api.multiversx.com/accounts/${address}/transactions`);
+  const data = await fetch(`https://devnet-api.multiversx.com/accounts/${address}/transactions`, { cache: "no-store" });
 
   const response = await data.json();
 

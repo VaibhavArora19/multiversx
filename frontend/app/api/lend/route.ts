@@ -32,7 +32,7 @@ const getLendingPositions = async () => {
   return (
     +Buffer.from(tokens).toString("hex") !== 0 && {
       token: "EGLD",
-      amount: ethers.formatUnits(parseInt(Buffer.from(tokens).toString("hex"), 16).toString(), 8),
+      amount: +ethers.formatUnits(parseInt(Buffer.from(tokens).toString("hex"), 16).toString(), 8) / 46.4,
       value: (Number(ethers.formatUnits(parseInt(Buffer.from(tokens).toString("hex"), 16).toString(), 8)) * 22) / 46.4,
       apy: 13.2,
       color: "bg-blue-500",

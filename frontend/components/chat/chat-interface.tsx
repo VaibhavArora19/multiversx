@@ -69,7 +69,7 @@ export function ChatInterface() {
   };
 
   return (
-    <Card className="flex h-[96vh] flex-col ">
+    <Card className="flex flex-col min-h-[96vh]">
       <ScrollArea className="flex-1 p-4">
         <AnimatePresence initial={false}>
           {messages.map((message) => (
@@ -82,7 +82,7 @@ export function ChatInterface() {
             >
               <div className={`flex max-w-[80%] items-start gap-3 ${message.sender === "user" ? "flex-row-reverse" : ""}`}>
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={message.sender === "ai" ? "/ai-avatar.png" : "/user-avatar.png"} />
+                  <AvatarImage src={message.sender === "ai" ? "/mx.png" : "/user-avatar.png"} />
                   <AvatarFallback>{message.sender === "ai" ? "AI" : "U"}</AvatarFallback>
                 </Avatar>
                 <div className={`rounded-lg px-4 py-2 ${message.sender === "user" ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
