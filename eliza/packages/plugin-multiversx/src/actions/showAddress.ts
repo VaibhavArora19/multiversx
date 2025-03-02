@@ -25,8 +25,8 @@ import { denominateAmount } from "../utils/amount";
 
 
 export default {
-    name: "SHOW_BALANCE",
-    similes: ["GET_BALANCE", "GET_TOKENS", "FETCH_BALANCE"],
+    name: "SHOW_ADDRESS",
+    similes: ["GET_ADDRESS","FETCH_ADDRESS"],
     validate: async (runtime: IAgentRuntime, message: Memory) => {
         elizaLogger.log("Validating config for user:", message.userId);
         await validateMultiversxConfig(runtime);
@@ -40,7 +40,7 @@ export default {
         _options: { [key: string]: unknown },
         callback?: HandlerCallback
     ) => {
-        elizaLogger.log("Starting SHOW_BALANCE handler...");
+        elizaLogger.log("Starting SHOW_ADDRESS handler...");
 
         elizaLogger.log("Handler initialized. Checking user authorization...");
 
@@ -66,7 +66,7 @@ export default {
         }
 
         //!make this address dynamic later
-        const address = 'erd13gh9ecruu4kg2r76ts8w64jzk2q8etxcev3w32j788fjpfg2kk0qjw8d20';
+        // const address = 'erd13gh9ecruu4kg2r76ts8w64jzk2q8etxcev3w32j788fjpfg2kk0qjw8d20';
 
         try {
             const privateKey = runtime.getSetting("MVX_PRIVATE_KEY");
@@ -74,32 +74,10 @@ export default {
 
             const walletProvider = new WalletProvider(privateKey, network);
 
-            const balance = await walletProvider.getBalance();
-            // const estdsBalance = await walletProvider.getESDTSBalance();
-
-            const estdsBalance = await walletProvider.getTokensData(walletProvider.getAddress().bech32());
-
-            let balanceObject = [];
-
-            balanceObject.push({
-
-                token: "EGLD",
-                balance: denominateAmount({amount: balance, decimals: -18}),
-                amount: +denominateAmount({amount: balance, decimals: -18}) * 22
-            })
-
-            estdsBalance.forEach(data => {
-                balanceObject.push({
-                    token: data?.ticker,
-                    balance: denominateAmount({amount: data?.balance, decimals: -data?.decimals}),
-                    amount: "$"+(data?.valueUsd ?? 0)
-                })
-            })
-
-            balanceObject.map(obj => JSON.stringify(obj, null, 2)).join('\n')
+            const address = walletProvider.getAddress().bech32();
 
             callback?.({
-                text: `Your wallet address balance - \n ${balanceObject.map(obj => JSON.stringify(obj, null, 2)).join('\n')}`
+                text: `Your wallet address - \n ${address}`
             })
             return true;
         } catch (error) {
@@ -119,14 +97,14 @@ export default {
         {
             "user": "{{user1}}",
             "content": {
-                "text": "Get balance of my account",
-                "action": "SHOW_BALANCE"
+                "text": "Get address of my account",
+                "action": "SHOW_ADDRESS"
             }
         },
         {
             "user": "MVSX_Bot",
             "content": {
-                "text": "Your balance for XTREME (XTR) is 5000."
+                "text": "Your address is erd13gh9ecruu4kg2r76ts8w64jzk2q8etxcev3w32j788fjpfg2kk0qjw8d20."
             }
         }
     ],
@@ -134,14 +112,14 @@ export default {
         {
             "user": "{{user1}}",
             "content": {
-                "text": "Get balance of token TEST (TST) for my account",
-                "action": "GET_BALANCE"
+                "text": "Show me my address",
+                "action": "SHOW_ADDRESS"
             }
         },
         {
             "user": "MVSX_Bot",
             "content": {
-                "text": "Your balance for TEST (TST) is 7500."
+                "text": "Your address is erd13gh9ecruu4kg2r76ts8w64jzk2q8etxcev3w32j788fjpfg2kk0qjw8d20."
             }
         }
     ]

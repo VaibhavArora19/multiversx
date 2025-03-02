@@ -221,7 +221,7 @@ export default {
                 });
    
                 let variables: TVariables = {
-                    amountIn: value,
+                    amountIn: value.split('.')[0],
                     tokenInID: "EGLD",
                     tokenOutID: token.identifier,
                     tolerance: 0.01,

@@ -75,7 +75,7 @@ export const healthScores = [
 
 export const investment_assets = [
     {
-        name: "EGLD",
+        name: "MEX-a659d0",
         riskTolerance: ['conservative', 'moderate'],
         annualReturns: '10%-30%',
         investmentTimeline: '1-2 years',
@@ -103,5 +103,11 @@ export const investment_assets = [
         riskTolerance: ['conservative'],
         annualReturns: '30-50%',
         investmentTimeline: "1 year"
+    },
+    {
+        name: 'USH-dda7c6',
+        riskTolerance: ['conservative', 'moderate'],
+        annualReturns: '25-40%',
+        investmentTimeline: "1-2 years"
     }
 ]
