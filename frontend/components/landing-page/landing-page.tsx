@@ -7,43 +7,15 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ArrowRight, CheckCircle2, ChevronRight, Sparkles, Star, Zap, ArrowUpRight } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
-import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Float, MeshDistortMaterial } from "@react-three/drei";
-import { MagneticButton } from "@/components/landing-page/magnetic-button";
+
 import { AnimatedCounter } from "@/components/landing-page/animated-counter";
 import { AnimatedBackground } from "@/components/landing-page/animated-background";
 import { CustomCursor } from "@/components/landing-page/custom-cursor";
 import { FloatingNav } from "@/components/landing-page/floating-nav";
 import { TextReveal } from "@/components/landing-page/text-reveal";
-
-function Scene() {
-  return (
-    <div></div>
-    // <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
-    //   <ambientLight intensity={0.5} />
-    //   <directionalLight position={[2, 2, 5]} intensity={1} />
-    //   <Float speed={4} rotationIntensity={1} floatIntensity={2}>
-    //     <mesh>
-    //       <sphereGeometry args={[1, 64, 64]} />
-    //       <MeshDistortMaterial color="#4F46E5" attach="material" distort={0.5} speed={2} />
-    //     </mesh>
-    //   </Float>
-    //   <OrbitControls enableZoom={false} />
-    // </Canvas>
-    // <canvas>
-    //   <ambientLight intensity={0.5} />
-    //   <directionalLight position={[2, 2, 5]} intensity={1} />{" "}
-    //   <Float speed={4} rotationIntensity={1} floatIntensity={2}>
-    //     {" "}
-    //     <mesh>
-    //       <sphereGeometry args={[1, 64, 64]} />
-    //       <MeshDistortMaterial color="#4F46E5" attach="material" distort={0.5} speed={2} />{" "}
-    //     </mesh>{" "}
-    //   </Float>
-    //   <OrbitControls enableZoom={false} />
-    // </canvas>
-  );
-}
+import { useRouter } from "next/navigation";
+import { MagneticButton } from "./magnetic-button";
+import { AnimatedSphere } from "@/components/landing-page/animated-sphere";
 
 export function LandingPage() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -52,6 +24,7 @@ export function LandingPage() {
     target: targetRef,
     offset: ["start start", "end start"],
   });
+  const router = useRouter();
 
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8]);
@@ -101,14 +74,14 @@ export function LandingPage() {
               transition={{ duration: 0.5, delay: 0.6 }}
             >
               <MagneticButton>
-                <Button size="lg" className="h-12 px-8 text-lg">
+                <Button size="lg" className="h-12 px-8 text-lg" onClick={() => router.push("/chat")}>
                   Get Started
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </MagneticButton>
               <MagneticButton>
-                <Button variant="outline" size="lg" className="h-12 px-8 text-lg">
-                  Watch Demo
+                <Button variant="outline" size="lg" className="h-12 px-8 text-lg" onClick={() => router.push("/dashboard")}>
+                  Dashboard
                   <ChevronRight className="ml-2 h-5 w-5" />
                 </Button>
               </MagneticButton>
@@ -121,6 +94,7 @@ export function LandingPage() {
             transition={{ duration: 1, delay: 0.2 }}
           >
             {/* <Scene /> */}
+            <AnimatedSphere />
           </motion.div>
         </div>
       </section>
@@ -271,7 +245,7 @@ export function LandingPage() {
               viewport={{ once: true }}
             >
               <MagneticButton>
-                <Button size="lg" className="h-12 px-8 text-lg">
+                <Button size="lg" className="h-12 px-8 text-lg" onClick={() => router.push("/chat")}>
                   Get Started Now
                   <ArrowUpRight className="ml-2 h-5 w-5" />
                 </Button>

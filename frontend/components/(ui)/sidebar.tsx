@@ -1,23 +1,25 @@
 "use client";
 
-import { LayoutDashboard, MessageSquare, LineChart, Wallet, Settings, HelpCircle } from "lucide-react";
+import { LayoutDashboard, MessageSquare, LineChart, Wallet, Settings, HelpCircle, DollarSign } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export function AppSidebar() {
+  const router = useRouter();
   const pathname = usePathname();
 
   return (
     <Sidebar>
-      <SidebarHeader className="border-b p-4">
+      <SidebarHeader className="border-b p-4 cursor-pointer" onClick={() => router.push("/")}>
         <h2 className="text-lg font-semibold">DeFiVerse</h2>
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild isActive={pathname === "/"}>
-              <Link href="/">
+              <Link href="/dashboard">
                 <LayoutDashboard className="h-4 w-4" />
                 <span>Dashboard</span>
               </Link>
@@ -33,14 +35,6 @@ export function AppSidebar() {
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <Link href="/market">
-                <LineChart className="h-4 w-4" />
-                <span>Market</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
               <Link href="/whales">
                 <Wallet className="h-4 w-4" />
                 <span>Top Wallets</span>
@@ -49,15 +43,15 @@ export function AppSidebar() {
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <Link href="/">
-                <Settings className="h-4 w-4" />
+              <Link href="/invest">
+                <DollarSign className="h-4 w-4" />
                 <span>Invest</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <Link href="/help">
+              <Link href="https://vaibhavcodes.vercel.app/about" target="_blank">
                 <HelpCircle className="h-4 w-4" />
                 <span>Help</span>
               </Link>
