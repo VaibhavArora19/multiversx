@@ -138,9 +138,7 @@ export function PortfolioOverview() {
             <CardTitle>Portfolio Performance</CardTitle>
             <CardDescription>Your portfolio value over time</CardDescription>
           </CardHeader>
-          <CardContent>
-            <Overview />
-          </CardContent>
+          <CardContent>{balance && <Overview balance={balance} />}</CardContent>
         </Card>
       </motion.div>
 

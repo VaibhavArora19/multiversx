@@ -14,7 +14,7 @@ export type TData = {
   valueUsd: number;
 }[];
 
-const COLORS = ["#3b82f6", "#22c55e", "#DE3163", "#64748b", "#FFB200", "#0D4715", "#56021F", "#DE3163"];
+const COLORS = ["#3b82f6", "#22c55e", "#DE3163", "#64748b", "#4B164C", "#FF9D23", "#FCC6FF", "#FF9D23"];
 
 export function AssetAllocation({ data }: { data: TData }) {
   console.log("data is", data);
