@@ -1,4 +1,4 @@
-import { controllerAddress, egldMoneyMarketAddress } from "@/constants";
+import { controllerAddress, egldMoneyMarketAddress, taoMoneyMarketAddress } from "@/constants";
 import { Address, AddressValue, ApiNetworkProvider, QueryRunnerAdapter, SmartContractQueriesController } from "@multiversx/sdk-core/out";
 import { ethers } from "ethers";
 
@@ -34,7 +34,7 @@ const getLendingPositions = async () => {
       token: "EGLD",
       amount: +ethers.formatUnits(parseInt(Buffer.from(tokens).toString("hex"), 16).toString(), 8) / 46.4,
       value: (Number(ethers.formatUnits(parseInt(Buffer.from(tokens).toString("hex"), 16).toString(), 8)) * 22) / 46.4,
-      apy: 13.2,
+      apy: 82.602,
       color: "bg-blue-500",
     }
   );
@@ -56,7 +56,7 @@ const getBorrowingPositions = async () => {
   });
 
   const query = controller.createQuery({
-    contract: egldMoneyMarketAddress, //!this should be dynamic for different contracts
+    contract: taoMoneyMarketAddress, //!this should be dynamic for different contracts
     function: "getStoredAccountBorrowAmount",
     arguments: [new AddressValue(unformattedAddress)],
   });
@@ -65,12 +65,16 @@ const getBorrowingPositions = async () => {
 
   const [tokens] = controller.parseQueryResponse(response);
 
+  console.log("tokens: ", Buffer.from(tokens).toString("hex"));
+  console.log("amount: ", ethers.formatUnits(parseInt(Buffer.from(tokens).toString("hex"), 16).toString(), 9));
+  console.log("value: ", Number(ethers.formatUnits(parseInt(Buffer.from(tokens).toString("hex"), 16).toString())) * 338.3);
+
   return (
-    +Buffer.from(tokens).toString("hex") !== 0 && {
-      token: "EGLD",
-      amount: ethers.parseEther(parseInt(Buffer.from(tokens).toString("hex"), 16).toString()),
-      value: Number(ethers.parseEther(parseInt(Buffer.from(tokens).toString("hex"), 16).toString())) * 22,
-      apy: 13.2,
+    Buffer.from(tokens).toString("hex") !== "" && {
+      token: "WTAO",
+      amount: ethers.formatUnits(parseInt(Buffer.from(tokens).toString("hex"), 16).toString(), 9).toString(),
+      value: Number(ethers.formatUnits(parseInt(Buffer.from(tokens).toString("hex"), 16).toString(), 9)) * 338.3,
+      apy: 0.514,
       color: "bg-blue-500",
     }
   );
