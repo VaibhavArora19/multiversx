@@ -25,7 +25,6 @@ import {
 } from "@multiversx/sdk-core/out";
 import { denominateAmount, getRawAmount } from "../utils/amount";
 import { getToken } from "../utils/getToken";
-import { filteredTokensQuery } from "../graphql/tokensQuery";
 import { isUserAuthorized } from "../utils/accessTokenManagement";
 
 
@@ -293,11 +292,12 @@ export default {
             {
                 user: "{{user1}}",
                 content: {
-                    text: "Swap 1 EGLD for USDC",
+                    text: "Rebalance 1 EGLD for USDC",
+                    action: "REBALANCE"
                 },
             },
             {
-                user: "{{agent}}",
+                user: "MVSX_Bot",
                 content: {
                     text: "Swapping 1 EGLD for USDC...",
                 },

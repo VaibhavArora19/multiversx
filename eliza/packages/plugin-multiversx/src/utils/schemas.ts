@@ -52,3 +52,9 @@ export const valueSchema = z.object({tokens: z.array(z.object({
     identifier: z.string().min(1, {message: "identifier is required"}),
     amount: z.string().min(1, {message: "amount is required"})
 }))})
+
+export const rebalanceSchema = z.object({
+    tokenIn: z.string().min(1, { message: "First token is required." }),
+    amountIn: z.string().min(1, { message: "Amount is required." }),
+    tokenOut: z.string().min(1, { message: "Second token is required." }),
+});
