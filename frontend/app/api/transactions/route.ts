@@ -4,7 +4,7 @@ export async function GET() {
 
   //   const address = signer.getAddress().bech32();
 
-  const address = "erd13gh9ecruu4kg2r76ts8w64jzk2q8etxcev3w32j788fjpfg2kk0qjw8d20";
+  const address = "erd12zmngrp3k3hd3rf309fky5pp38t9ykx9vn5x2k6m49g60dreuzus6vkger";
 
   //   const unformattedAddress = Address.fromBech32(address);
 

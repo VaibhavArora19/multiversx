@@ -30,7 +30,7 @@ const copyTradeTemplate = `Respond with a JSON markdown block containing only th
 Example response:
 \`\`\`json
 {
-    "walletAddress": "erd13gh9ecruu4kg2r76ts8w64jzk2q8etxcev3w32j788fjpfg2kk0qjw8d20",
+    "walletAddress": "erd12zmngrp3k3hd3rf309fky5pp38t9ykx9vn5x2k6m49g60dreuzus6vkger",
 }
 \`\`\`
 
@@ -232,7 +232,7 @@ export default {
             {
                 user: "{{user1}}",
                 content: {
-                    text: "Copy trade this address erd13gh9ecruu4kg2r76ts8w64jzk2q8etxcev3w32j788fjpfg2kk0qjw8d20",
+                    text: "Copy trade this address erd12zmngrp3k3hd3rf309fky5pp38t9ykx9vn5x2k6m49g60dreuzus6vkger",
                     action: "COPY_TRADE",
                 },
             },
@@ -247,7 +247,7 @@ export default {
             {
                 user: "{{user1}}",
                 content: {
-                    text: "Can you copy all the tokens from this wallet erd13gh9ecruu4kg2r76ts8w64jzk2q8etxcev3w32j788fjpfg2kk0qjw8d20",
+                    text: "Can you copy all the tokens from this wallet erd12zmngrp3k3hd3rf309fky5pp38t9ykx9vn5x2k6m49g60dreuzus6vkger",
                     action: "COPY_TRADE",
                 },
             },

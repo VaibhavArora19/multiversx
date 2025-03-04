@@ -35,7 +35,25 @@ export const identifiers = {
     'HTM': {
         identifier: 'HHTM-f26787'
     }
-}
+};
+
+export const tokenList = [
+    {
+        identifier: "EGLD",
+        decimals: 18,
+        mmAddress: "erd1qqqqqqqqqqqqqpgq2udp46dvs4cvp4urak39t2fqxp7t3lpzv5ysec452j",
+    },
+    {
+        identifier: 'USDC-350c4e',
+        decimals: 6,
+        mmAddress: "erd1qqqqqqqqqqqqqpgq5yzuzz0uqe6x6aun0jgr48p980j24yvav5ys2h60qa",
+    },
+    {
+        identifier: "WTAO-f94e58",
+        decimals: 9,
+        mmAddress: 'erd1qqqqqqqqqqqqqpgqara7qx6funfum8jy30fctvre23rffxw4v5ysnzmlnt' 
+    }
+]
 
 export const healthScores = [
     {

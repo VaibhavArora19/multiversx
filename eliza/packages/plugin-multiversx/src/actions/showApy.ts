@@ -22,17 +22,18 @@ export interface CreateTokenContent extends Content {
 }
 import { isUserAuthorized } from "../utils/accessTokenManagement";
 import { denominateAmount } from "../utils/amount";
+import { tokenList } from "../constants";
 
 
 export default {
-    name: "SHOW_ADDRESS",
-    similes: ["GET_ADDRESS","FETCH_ADDRESS"],
+    name: "SHOW_APY",
+    similes: ["FETCH_APY", "FETCH_YIELD"],
     validate: async (runtime: IAgentRuntime, message: Memory) => {
         elizaLogger.log("Validating config for user:", message.userId);
         await validateMultiversxConfig(runtime);
         return true;
     },
-    description: "Show token balance of user.",
+    description: "Show apy of the lending tokens",
     handler: async (
         runtime: IAgentRuntime,
         message: Memory,
@@ -40,18 +41,18 @@ export default {
         _options: { [key: string]: unknown },
         callback?: HandlerCallback
     ) => {
-        elizaLogger.log("Starting SHOW_ADDRESS handler...");
+        elizaLogger.log("Starting SHOW_BALANCE handler...");
 
         elizaLogger.log("Handler initialized. Checking user authorization...");
 
         if (!isUserAuthorized(message.userId, runtime)) {
             elizaLogger.error(
-                "Unauthorized user attempted to fetch the balance:",
+                "Unauthorized user attempted to fetch the apy:",
                 message.userId
             );
             if (callback) {
                 callback({
-                    text: "You do not have permission to fetch the balance.",
+                    text: "You do not have permission to fetch the apy.",
                     content: { error: "Unauthorized user" },
                 });
             }
@@ -66,7 +67,7 @@ export default {
         }
 
         //!make this address dynamic later
-        // const address = 'erd12zmngrp3k3hd3rf309fky5pp38t9ykx9vn5x2k6m49g60dreuzus6vkger';
+        const address = 'erd12zmngrp3k3hd3rf309fky5pp38t9ykx9vn5x2k6m49g60dreuzus6vkger';
 
         try {
             const privateKey = runtime.getSetting("MVX_PRIVATE_KEY");
@@ -74,10 +75,45 @@ export default {
 
             const walletProvider = new WalletProvider(privateKey, network);
 
-            const address = walletProvider.getAddress().bech32();
+            const balance = await walletProvider.getBalance();
+            // const estdsBalance = await walletProvider.getESDTSBalance();
+
+            const estdsBalance = await walletProvider.getTokensData(walletProvider.getAddress().bech32());
+
+            let balanceObject = [];
+
+            if(balance !== '0') {
+                balanceObject.push("EGLD");
+            }
+
+            estdsBalance.forEach((data) => {
+                balanceObject.push(data?.identifier);
+            });
+
+
+            const mmAddress = balanceObject.filter(identifier => tokenList.some(token => token.identifier === identifier));
+
+            //!call the function here in Promise.all and then get the apy and send it in fe
+
+            // balanceObject.push({
+
+            //     token: "EGLD",
+            //     balance: denominateAmount({amount: balance, decimals: -18}),
+            //     amount: +denominateAmount({amount: balance, decimals: -18}) * 22
+            // })
+
+            // estdsBalance.forEach(data => {
+            //     balanceObject.push({
+            //         token: data?.ticker,
+            //         balance: denominateAmount({amount: data?.balance, decimals: -data?.decimals}),
+            //         amount: "$"+(data?.valueUsd ?? 0)
+            //     })
+            // })
+
+            // balanceObject.map(obj => JSON.stringify(obj, null, 2)).join('\n')
 
             callback?.({
-                text: `Your wallet address - \n ${address}`
+                text: `Your wallet address balance - \n ${balanceObject.map(obj => JSON.stringify(obj, null, 2)).join('\n')}`
             })
             return true;
         } catch (error) {
@@ -97,14 +133,14 @@ export default {
         {
             "user": "{{user1}}",
             "content": {
-                "text": "Get address of my account",
-                "action": "SHOW_ADDRESS"
+                "text": "Get balance of my account",
+                "action": "SHOW_BALANCE"
             }
         },
         {
             "user": "MVSX_Bot",
             "content": {
-                "text": "Your address is erd12zmngrp3k3hd3rf309fky5pp38t9ykx9vn5x2k6m49g60dreuzus6vkger."
+                "text": "Your balance for XTREME (XTR) is 5000."
             }
         }
     ],
@@ -112,14 +148,14 @@ export default {
         {
             "user": "{{user1}}",
             "content": {
-                "text": "Show me my address",
-                "action": "SHOW_ADDRESS"
+                "text": "Get balance of token TEST (TST) for my account",
+                "action": "GET_BALANCE"
             }
         },
         {
             "user": "MVSX_Bot",
             "content": {
-                "text": "Your address is erd12zmngrp3k3hd3rf309fky5pp38t9ykx9vn5x2k6m49g60dreuzus6vkger."
+                "text": "Your balance for TEST (TST) is 7500."
             }
         }
     ]
