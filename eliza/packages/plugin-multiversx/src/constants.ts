@@ -100,6 +100,12 @@ export const investment_assets = [
         investmentTimeline: '1-2 years',
     },
     {
+        name: "HTM-23a1da",
+        riskTolerance: ['conservative'],
+        annualReturns: '10%-50%',
+        investmentTimeline: '1-2 years'
+    },
+    {
         name: "USDC-350c4e",
         riskTolerance: ['conservative'],
         annualReturns: '15%-35%',
@@ -128,5 +134,6 @@ export const investment_assets = [
         riskTolerance: ['conservative', 'moderate'],
         annualReturns: '25-40%',
         investmentTimeline: "1-2 years"
-    }
+    },
+
 ]
