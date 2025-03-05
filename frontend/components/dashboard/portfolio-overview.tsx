@@ -101,7 +101,7 @@ export function PortfolioOverview() {
         </Card>
       </motion.div>
 
-      {isFetchedLendingData && (
+      {isFetchedLendingData && lendingData?.isRisky && (
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3, delay: 0.3 }}>
           <Card>
             <CardHeader className="pb-3">
@@ -165,7 +165,7 @@ export function PortfolioOverview() {
           </CardContent>
         </Card>
       </motion.div>
-      {isFetchedLendingData && (
+      {isFetchedLendingData && lendingData?.suppliedPositions && (
         <LendingOverview suppliedPositions={lendingData.suppliedPositions} borrowedPositions={lendingData.borrowedPositions} />
       )}
     </div>

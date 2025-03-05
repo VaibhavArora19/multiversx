@@ -105,6 +105,8 @@ const getIsRisky = async () => {
 
   const [isRisky] = controller.parseQueryResponse(response);
 
+  console.log("is risky", +Buffer.from(isRisky).toString("hex"));
+
   return +Buffer.from(isRisky).toString("hex");
 };
 
