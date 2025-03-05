@@ -23,6 +23,7 @@ export const MVX_NETWORK_CONFIG = {
 export const hatomControllerAddress = "erd1qqqqqqqqqqqqqpgqwf9drqmy5wxfj36mehus7979wl659p6gv5ysu7ktra"
 export const egldMoneyMarketAddress = "erd1qqqqqqqqqqqqqpgq2udp46dvs4cvp4urak39t2fqxp7t3lpzv5ysec452j"
 export const taoMoneyMarketAddress = 'erd1qqqqqqqqqqqqqpgqara7qx6funfum8jy30fctvre23rffxw4v5ysnzmlnt'
+export const htmStakeAddress = 'erd1qqqqqqqqqqqqqpgqvyhjh8623r3v7n267fa3g3f62vlekhqe0n4s6fp752'
 
 
 export const identifiers = {

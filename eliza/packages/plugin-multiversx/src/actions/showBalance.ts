@@ -85,7 +85,7 @@ export default {
 
                 token: "EGLD",
                 balance: denominateAmount({amount: balance, decimals: -18}),
-                amount: +denominateAmount({amount: balance, decimals: -18}) * 22
+                amount: "$" + +denominateAmount({amount: balance, decimals: -18}) * 22
             })
 
             estdsBalance.forEach(data => {
