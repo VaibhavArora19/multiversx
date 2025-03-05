@@ -1,5 +1,15 @@
 import { controllerAddress, egldMoneyMarketAddress, taoMoneyMarketAddress } from "@/constants";
-import { Address, AddressValue, ApiNetworkProvider, QueryRunnerAdapter, SmartContractQueriesController } from "@multiversx/sdk-core/out";
+import {
+  Address,
+  AddressValue,
+  ApiNetworkProvider,
+  BigUIntType,
+  BinaryCodec,
+  QueryRunnerAdapter,
+  ResultsParser,
+  SmartContract,
+  SmartContractQueriesController,
+} from "@multiversx/sdk-core/out";
 import { ethers } from "ethers";
 
 const getLendingPositions = async () => {
@@ -11,29 +21,31 @@ const getLendingPositions = async () => {
 
   const apiProv = new ApiNetworkProvider("https://devnet-api.multiversx.com");
 
-  const queryRunner = new QueryRunnerAdapter({
-    networkProvider: apiProv,
+  let legacyDelegationContract = new SmartContract({
+    address: Address.fromBech32(controllerAddress),
   });
 
-  const controller = new SmartContractQueriesController({
-    queryRunner,
+  const query = legacyDelegationContract.createQuery({
+    func: "getAccountTokens",
+    args: [new AddressValue(egldAddress), new AddressValue(unformattedAddress)],
   });
 
-  const query = controller.createQuery({
-    contract: controllerAddress,
-    function: "getAccountTokens",
-    arguments: [new AddressValue(egldAddress), new AddressValue(unformattedAddress)],
-  });
+  const queryResponse = await apiProv.queryContract(query);
 
-  const response = await controller.runQuery(query);
+  let bundle = new ResultsParser().parseUntypedQueryResponse(queryResponse);
+  let firstValue = bundle.values[0];
+  let decodedValue = new BinaryCodec().decodeTopLevel(firstValue, new BigUIntType());
 
-  const [tokens] = controller.parseQueryResponse(response);
+  const value = decodedValue.valueOf();
+
+  console.log("decoded value for lend is", value);
+  console.log("unformatted", +ethers.formatUnits(parseInt(value.toString()).toString(), 8) / 46);
 
   return (
-    +Buffer.from(tokens).toString("hex") !== 0 && {
+    value.toString() !== "0" && {
       token: "EGLD",
-      amount: +ethers.formatUnits(parseInt(Buffer.from(tokens).toString("hex"), 16).toString(), 8) / 46.4,
-      value: (Number(ethers.formatUnits(parseInt(Buffer.from(tokens).toString("hex"), 16).toString(), 8)) * 22) / 46.4,
+      amount: (+ethers.formatUnits(parseInt(value.toString()).toString(), 8) / 46).toFixed(4),
+      value: ((+ethers.formatUnits(parseInt(value.toString()).toString(), 8) * 22) / 46).toFixed(4),
       apy: 82.602,
       color: "bg-blue-500",
     }
@@ -47,35 +59,31 @@ const getBorrowingPositions = async () => {
 
   const apiProv = new ApiNetworkProvider("https://devnet-api.multiversx.com");
 
-  const queryRunner = new QueryRunnerAdapter({
-    networkProvider: apiProv,
+  let legacyDelegationContract = new SmartContract({
+    address: Address.fromBech32(taoMoneyMarketAddress),
   });
 
-  const controller = new SmartContractQueriesController({
-    queryRunner,
+  const query = legacyDelegationContract.createQuery({
+    func: "getStoredAccountBorrowAmount",
+    args: [new AddressValue(unformattedAddress)],
   });
 
-  const query = controller.createQuery({
-    contract: taoMoneyMarketAddress, //!this should be dynamic for different contracts
-    function: "getStoredAccountBorrowAmount",
-    arguments: [new AddressValue(unformattedAddress)],
-  });
+  const queryResponse = await apiProv.queryContract(query);
 
-  const response = await controller.runQuery(query);
+  let bundle = new ResultsParser().parseUntypedQueryResponse(queryResponse);
+  let firstValue = bundle.values[0];
+  let decodedValue = new BinaryCodec().decodeTopLevel(firstValue, new BigUIntType());
 
-  const [tokens] = controller.parseQueryResponse(response);
+  const value = decodedValue.valueOf();
 
-  console.log("tokens: ", Buffer.from(tokens).toString("hex"));
-  console.log("amount: ", ethers.formatUnits(parseInt(Buffer.from(tokens).toString("hex"), 16).toString(), 9));
-  console.log("value: ", Number(ethers.formatUnits(parseInt(Buffer.from(tokens).toString("hex"), 16).toString())) * 338.3);
-
+  console.log("decoded value for borrow is", decodedValue.valueOf().toFixed(0));
   return (
-    Buffer.from(tokens).toString("hex") !== "" && {
+    value.toString() !== "0" && {
       token: "WTAO",
-      amount: ethers.formatUnits(parseInt(Buffer.from(tokens).toString("hex"), 16).toString(), 9).toString(),
-      value: Number(ethers.formatUnits(parseInt(Buffer.from(tokens).toString("hex"), 16).toString(), 9)) * 338.3,
+      amount: (+ethers.formatUnits(parseInt(value.toString()).toString(), 9)).toFixed(4),
+      value: (+ethers.formatUnits(parseInt(value.toString()).toString(), 9) * 338.6).toFixed(4),
       apy: 0.514,
-      color: "bg-blue-500",
+      color: "bg-pink-500",
     }
   );
 };

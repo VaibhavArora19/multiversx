@@ -104,46 +104,38 @@ export function PortfolioOverview() {
         </Card>
       </motion.div>
 
-      {isFetchedLendingData && lendingData?.isRisky && (
+      {isFetchedLendingData && (
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3, delay: 0.3 }}>
           <Card>
             <CardHeader className="pb-3">
               <CardTitle>Health Factor</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="font-medium">Current: {lendingData && lendingData.isRisky == 1 ? 0.78 : 1.7}</span>
-                  <span className={`text-sm ${false ? "text-red-500" : "text-green-500"}`}>{lendingData.isRisky == 1 ? "At Risk" : "Safe"}</span>
-                </div>
-                <Progress
-                  value={Math.min((lendingData && lendingData.isRisky == 1 ? 0.78 : 1.8 / 2) * 100, 100)}
-                  className="h-2"
-                  indicatorClassName={lendingData.isRisky == 1 ? "bg-red-500" : "bg-green-500"}
-                />
-                {lendingData && lendingData.isRisky && (
-                  <Alert variant="destructive">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>
-                      Your health factor is low. Consider repaying some debt or adding more collateral to avoid liquidation.
-                    </AlertDescription>
-                  </Alert>
-                )}
+              <div className="text-2xl font-bold">
+                <span className={`text-sm ${false ? "text-red-500" : "text-green-500"}`}>{lendingData.isRisky == 1 ? "At Risk" : "Safe"}</span>
               </div>
+              <p className="text-xs text-muted-foreground">Your assets are safe from liquidation</p>
             </CardContent>
           </Card>
         </motion.div>
       )}
 
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }} className="md:col-span-2">
-        <Card className="mt-10">
-          <CardHeader>
-            <CardTitle>Portfolio Performance</CardTitle>
-            <CardDescription>Your portfolio value over time</CardDescription>
-          </CardHeader>
-          <CardContent>{balance && <Overview balance={balance} />}</CardContent>
-        </Card>
-      </motion.div>
+      {balance !== "0" && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="md:col-span-2"
+        >
+          <Card className="mt-10">
+            <CardHeader>
+              <CardTitle>Portfolio Performance</CardTitle>
+              <CardDescription>Your portfolio value over time</CardDescription>
+            </CardHeader>
+            <CardContent>{balance && <Overview balance={balance} />}</CardContent>
+          </Card>
+        </motion.div>
+      )}
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.5 }}>
         <Card className="mt-10">

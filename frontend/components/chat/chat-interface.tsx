@@ -68,6 +68,25 @@ export function ChatInterface() {
     setMessages((prev) => [...prev, ...aiMessages]);
   };
 
+  const MessageWithLinks = (text: string) => {
+    const linkRegex = /(https?:\/\/[^\s]+)/g;
+    const parts = text.split(linkRegex);
+
+    return (
+      <pre>
+        {parts.map((part, index) =>
+          linkRegex.test(part) ? (
+            <a key={index} href={part} target="_blank" rel="noopener noreferrer" className="border-b-2">
+              {part}
+            </a>
+          ) : (
+            part
+          )
+        )}
+      </pre>
+    );
+  };
+
   return (
     <Card className="flex flex-col min-h-[96vh]">
       <ScrollArea className="flex-1 p-4">
@@ -86,7 +105,7 @@ export function ChatInterface() {
                   <AvatarFallback>{message.sender === "ai" ? "AI" : "U"}</AvatarFallback>
                 </Avatar>
                 <div className={`rounded-lg px-4 py-2 ${message.sender === "user" ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
-                  <p className="text-sm">{message.content}</p>
+                  {MessageWithLinks(message.content)}
                   <p className="mt-1 text-xs opacity-70">{message.timestamp.toLocaleTimeString()}</p>
                 </div>
               </div>
