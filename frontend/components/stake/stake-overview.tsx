@@ -20,8 +20,8 @@ export function StakingOverview({ stakedPositions }: { stakedPositions: TPositio
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="space-y-4">
         <Card>
           <CardHeader>
-            <CardTitle>Supplied Assets</CardTitle>
-            <CardDescription>Assets supplied as collateral</CardDescription>
+            <CardTitle>Staked Assets</CardTitle>
+            <CardDescription>Assets staked for rewards</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div>

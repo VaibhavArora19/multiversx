@@ -6,7 +6,7 @@ import { RecentTransactions } from "@/components/dashboard/recent-transactions";
 import { AssetAllocation, TData } from "@/components/dashboard/asset-allocation";
 import { motion } from "framer-motion";
 import { useGetBalance } from "@/hooks/balance";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useGetTransactions } from "@/hooks/transactions";
 import { ethers } from "ethers";
 import { LendingOverview } from "../lend/lending-overview";
@@ -14,6 +14,8 @@ import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useGetLendingData } from "@/hooks/lend-data";
+import { StakingOverview } from "../stake/stake-overview";
+import { useFetchStakeData } from "@/hooks/stake";
 
 export function PortfolioOverview() {
   const [balance, setBalance] = useState("0");
@@ -22,6 +24,7 @@ export function PortfolioOverview() {
   const [chartData, setChartData] = useState<any[]>([]);
   const [txData, setTxData] = useState<any[]>([]);
   const { data: lendingData, isFetched: isFetchedLendingData } = useGetLendingData();
+  const { data: stakingData, isFetched: isStakingDataFetched } = useFetchStakeData();
 
   useEffect(() => {
     if (isFetched && data) {
@@ -168,6 +171,7 @@ export function PortfolioOverview() {
       {isFetchedLendingData && lendingData?.suppliedPositions && (
         <LendingOverview suppliedPositions={lendingData.suppliedPositions} borrowedPositions={lendingData.borrowedPositions} />
       )}
+      {isStakingDataFetched && stakingData && <StakingOverview stakedPositions={stakingData} />}
     </div>
   );
 }
