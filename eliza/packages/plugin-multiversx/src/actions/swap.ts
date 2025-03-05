@@ -273,7 +273,7 @@ export default {
 
             const transactionURLs = txURLs.join(",");
             callback?.({
-                text: `Transaction(s) sent successfully! You can view it here: ${transactionURLs}.`,
+                text: `Transaction(s) sent successfully! You can view it here: ${transactionURLs}`,
             });
             return true;
         } catch (error) {

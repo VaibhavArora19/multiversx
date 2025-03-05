@@ -131,7 +131,7 @@ export default {
 
             const txURL = walletProvider.getTransactionURL(txHash);
             callback?.({
-                text: `Transaction sent successfully! You can view it here: ${txURL}.`,
+                text: `Transaction sent successfully! You can view it here: ${txURL}`,
             });
 
             return true;

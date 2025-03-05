@@ -14,6 +14,10 @@ import {
 import { WalletProvider } from "../providers/wallet";
 import { validateMultiversxConfig } from "../environment";
 import { createTokenSchema } from "../utils/schemas";
+import stringTable from 'string-table';
+
+console.log("g")
+
 export interface CreateTokenContent extends Content {
     tokenName: string;
     tokenTicker: string;
@@ -98,8 +102,12 @@ export default {
 
             balanceObject.map(obj => JSON.stringify(obj, null, 2)).join('\n')
 
+            const table = stringTable.create(balanceObject);
+
+            console.log(`${table}`)
+
             callback?.({
-                text: `Your wallet address balance - \n ${balanceObject.map(obj => JSON.stringify(obj, null, 2)).join('\n')}`
+                text: `${table}`
             })
             return true;
         } catch (error) {

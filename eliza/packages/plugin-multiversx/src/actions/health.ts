@@ -106,15 +106,15 @@ export default {
 
             estdsBalance.forEach(data => {
                 balanceObject.push({
-                    identifier: data.identifier,
+                    identifier: data?.ticker,
                     balance: data.balance,
                     balanceUsd: data?.valueUsd ?? 0
                 })
             })
 
             const state = await runtime.composeState(message, {
-                firstArray: balanceObject,
-                secondArray: healthScores,
+                firstArray: JSON.stringify(balanceObject),
+                secondArray: JSON.stringify(healthScores),
             })
 
             elizaLogger.info('state is', JSON.stringify(state));
