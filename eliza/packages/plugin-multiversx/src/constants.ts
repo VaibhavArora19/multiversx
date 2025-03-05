@@ -88,6 +88,10 @@ export const healthScores = [
     {
         identifier: "WETH",
         score: 60 
+    },
+    {
+        identifier: "HTM",
+        score: 75
     }
 ]
 

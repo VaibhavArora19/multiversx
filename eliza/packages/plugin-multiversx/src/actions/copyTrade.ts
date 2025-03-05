@@ -212,7 +212,7 @@ export default {
             const transactionHashes = txUrls.join(",")
 
             callback?.({
-                text: `Transaction sent successfully! You can view it here: ${transactionHashes}.`,
+                text: `Transaction sent successfully! You can view it here: ${transactionHashes}`,
             });
             return true;
         } catch (error) {
