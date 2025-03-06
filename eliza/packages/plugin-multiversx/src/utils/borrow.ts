@@ -1,72 +1,74 @@
-import { Address, SmartContractTransactionsFactory, TransactionsFactoryConfig, U32Value } from "@multiversx/sdk-core/out";
+import { Address, SmartContractTransactionsFactory, TransactionsFactoryConfig, TransactionWatcher, U32Value } from "@multiversx/sdk-core/out";
 import { taoMoneyMarketAddress } from "../constants";
 import { WalletProvider } from "../providers/wallet";
+import { elizaLogger } from "@elizaos/core";
+import { WarpBuilder, WarpRegistry } from "@vleap/warps";
 
-// export const createBorrowWarp = async (walletProvider: WalletProvider, amount: number) => {
-// const warpSchema = {
-//   protocol: "warp:0.1.0",
-//   name: "Lending Warp",
-//   title: "Allow people to lend on hatom",
-//   description: `Lend ${amount} EGLD to hatom using warps`,
-//   preview: "https://pbs.twimg.com/media/Fguvr4LXgAErJ-I?format=jpg",
-//   actions: [
-//     {
-//       type: "contract",
-//       label: "Supply",
-//       address: "erd1qqqqqqqqqqqqqpgq2udp46dvs4cvp4urak39t2fqxp7t3lpzv5ysec452j",
-//       func: "mint",
-//       args: [],
-//       value: BigInt(amount * 10 ** 18).toString(),
-//       gasLimit: 300000000,
-//     },
-//   ],
-// };
-// const address = walletProvider.getAddress();
+export const createBorrowWarp = async (walletProvider: WalletProvider, amount: number) => {
+const warpSchema = {
+  protocol: "warp:0.1.0",
+  name: "Borrowing Warp",
+  title: "Allow people to borrow on hatom",
+  description: `Borrow ${amount} WTAO from hatom using warps`,
+  preview: "https://pbs.twimg.com/media/Fguvr4LXgAErJ-I?format=jpg",
+  actions: [
+    {
+      type: "contract",
+      label: "Borrow",
+      address: "erd1qqqqqqqqqqqqqpgqara7qx6funfum8jy30fctvre23rffxw4v5ysnzmlnt",
+      func: "borrow",
+      args: [`biguint:${BigInt(amount * 10 ** 9).toString()}`],
+      value: '0',
+      gasLimit: 300000000,
+    },
+  ],
+};
+const address = walletProvider.getAddress();
 
-// elizaLogger.info('address is', address.toBech32());
+elizaLogger.info('address is', address.toBech32());
 
-// const builder = new WarpBuilder({env: "devnet", userAddress: address.toBech32()});
+const builder = new WarpBuilder({env: "devnet", userAddress: address.toBech32()});
 
-// const warp = await builder.createFromRaw(JSON.stringify(warpSchema));
+const warp = await builder.createFromRaw(JSON.stringify(warpSchema));
 
-// const transaction = builder.createInscriptionTransaction(warp);
+const transaction = builder.createInscriptionTransaction(warp);
 
-// const apiProv = walletProvider.getProvider();
+const apiProv = walletProvider.getProvider();
 
-// const nonce = (await apiProv.getAccount(address)).nonce;
+const nonce = (await apiProv.getAccount(address)).nonce;
 
-// transaction.nonce = BigInt(nonce);
+transaction.nonce = BigInt(nonce);
 
-// const signature = await walletProvider.signTransaction(transaction)
+const signature = await walletProvider.signTransaction(transaction)
 
-// transaction.signature = signature;
+transaction.signature = signature;
 
-// const txHash = await walletProvider.sendTransaction(transaction);
+const txHash = await walletProvider.sendTransaction(transaction);
 
-// await new TransactionWatcher(apiProv).awaitCompleted(txHash);
+await new TransactionWatcher(apiProv).awaitCompleted(txHash);
 
-// elizaLogger.info('txhash is: ', txHash.toString())
+elizaLogger.info('txhash is: ', txHash.toString())
 
-// const registry = new WarpRegistry({env: 'devnet', userAddress: address.toBech32()});
+const registry = new WarpRegistry({env: 'devnet', userAddress: address.toBech32()});
 
-// await registry.init();
+await registry.init();
 
-// const transaction2 = registry.createWarpRegisterTransaction(txHash);
+const transaction2 = registry.createWarpRegisterTransaction(txHash);
 
-// const nonce2 = (await apiProv.getAccount(address)).nonce;
+const nonce2 = (await apiProv.getAccount(address)).nonce;
 
-// transaction2.nonce = BigInt(nonce2);
+transaction2.nonce = BigInt(nonce2);
 
-// const signature2 = await walletProvider.signTransaction(transaction2)
+const signature2 = await walletProvider.signTransaction(transaction2)
 
-// transaction2.signature = signature2;
+transaction2.signature = signature2;
 
-// const txHash2 = await walletProvider.sendTransaction(transaction2);
-// elizaLogger.info('txhash2 is: ', txHash2.toString())
+const txHash2 = await walletProvider.sendTransaction(transaction2);
+elizaLogger.info('txhash2 is: ', txHash2.toString())
 
-// return `https://devnet.usewarp.to/hash%3A${txHash}`
+return `https://devnet.usewarp.to/hash%3A${txHash}`
 
-// };
+};
 
 export const borrowToken = async (walletProvider: WalletProvider, amount: number): Promise<string> => {
   const factoryConfig = new TransactionsFactoryConfig({ chainID: "D" });

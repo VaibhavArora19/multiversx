@@ -12,11 +12,12 @@ import showAddress from "./actions/showAddress";
 import rebalance_recommendation from "./actions/rebalance_recommendation";
 import stake from "./actions/stake";
 import lendWarp from "./actions/lendWarp";
+import borrowWarp from "./actions/borrowWarp";
 
 export const multiversxPlugin: Plugin = {
     name: "multiversx",
     description: "MultiversX Plugin for Eliza",
-    actions: [transfer, createToken, swap, showBalance, lend, borrow, copyTrade, health, invest, showAddress, rebalance_recommendation, stake, lendWarp],
+    actions: [transfer, createToken, swap, showBalance, lend, borrow, copyTrade, health, invest, showAddress, rebalance_recommendation, stake, lendWarp, borrowWarp],
     evaluators: [],
     providers: [],
 };
