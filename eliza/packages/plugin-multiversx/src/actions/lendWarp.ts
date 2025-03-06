@@ -13,10 +13,10 @@ import {
 } from "@elizaos/core";
 import { WalletProvider } from "../providers/wallet";
 import { validateMultiversxConfig } from "../environment";
-import { lendTokenSchema } from "../utils/schemas";
+import { lendWarpSchema } from "../utils/schemas";
 export interface CreateTokenContent extends Content {
     tokenName: string;
-    amount: number;
+    amount?: number;
 }
 import { isUserAuthorized } from "../utils/accessTokenManagement";
 import { createLendWarp, } from "../utils/lend";
@@ -36,6 +36,7 @@ Example response:
 Given the recent messages, extract the following information about the requested token creation:
 - Token name
 - Amount
+
 
 
 Respond with a JSON markdown block containing only the extracted values.`;
@@ -100,7 +101,7 @@ export default {
             runtime,
             context: transferContext,
             modelClass: ModelClass.SMALL,
-            schema: lendTokenSchema,
+            schema: lendWarpSchema,
         });
 
         const payload = content.object as CreateTokenContent;
@@ -126,7 +127,7 @@ export default {
 
             const walletProvider = new WalletProvider(privateKey, network);
 
-            const warpUrl = await createLendWarp(walletProvider, payload.amount)
+            const warpUrl = await createLendWarp(walletProvider, payload?.tokenName, payload?.amount,)
 
             callback?.({
                 text: `Warp created Successfully! You can view your warp here: ${warpUrl}`,

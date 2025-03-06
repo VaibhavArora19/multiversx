@@ -1,28 +1,54 @@
 import { Address, SmartContractTransactionsFactory, TransactionsFactoryConfig, TransactionWatcher, U32Value } from "@multiversx/sdk-core/out";
-import { taoMoneyMarketAddress } from "../constants";
+import { taoMoneyMarketAddress, tokenList } from "../constants";
 import { WalletProvider } from "../providers/wallet";
 import { elizaLogger } from "@elizaos/core";
-import { WarpBuilder, WarpRegistry } from "@vleap/warps";
+import { Warp, WarpBuilder, WarpRegistry } from "@vleap/warps";
 
-export const createBorrowWarp = async (walletProvider: WalletProvider, amount: number) => {
-const warpSchema = {
+export const createBorrowWarp = async (walletProvider: WalletProvider, tokenName: string, amount?: number) => {
+const addr = tokenList.find(token => token.identifier === tokenName);
+
+if(!addr) {
+  throw new Error("No token found");
+}
+
+
+const warpSchema: Warp = {
   protocol: "warp:0.1.0",
   name: "Borrowing Warp",
   title: "Allow people to borrow on hatom",
-  description: `Borrow ${amount} WTAO from hatom using warps`,
+  description: `Borrow ${amount ? amount + ' of' : " "}  ${tokenName} from hatom using warpss`,
   preview: "https://pbs.twimg.com/media/Fguvr4LXgAErJ-I?format=jpg",
   actions: [
     {
       type: "contract",
       label: "Borrow",
-      address: "erd1qqqqqqqqqqqqqpgqara7qx6funfum8jy30fctvre23rffxw4v5ysnzmlnt",
+      address: addr.mmAddress,
       func: "borrow",
-      args: [`biguint:${BigInt(amount * 10 ** 9).toString()}`],
-      value: '0',
+      args: [],
       gasLimit: 300000000,
+      value: '0'
     },
   ],
 };
+
+if(amount) {
+  //@ts-ignore
+warpSchema.actions[0].args = [`biguint:${BigInt(amount * 10 ** addr.decimals).toString()}`]
+} else {
+ 
+  warpSchema.actions[0].inputs = [
+    {
+      name: "amount",
+      description: "amount of the token",
+      type: "biguint",
+      position: "arg:1",
+      source: "field",
+      required: true,
+      modifier: `scale:${addr.decimals.toString()}`
+    }
+  ]
+}
+
 const address = walletProvider.getAddress();
 
 elizaLogger.info('address is', address.toBech32());

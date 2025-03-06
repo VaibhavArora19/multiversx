@@ -13,7 +13,7 @@ import {
 } from "@elizaos/core";
 import { WalletProvider } from "../providers/wallet";
 import { validateMultiversxConfig } from "../environment";
-import { lendTokenSchema } from "../utils/schemas";
+import { lendTokenSchema, lendWarpSchema } from "../utils/schemas";
 export interface CreateTokenContent extends Content {
     tokenName: string;
     amount: number;
@@ -100,7 +100,7 @@ export default {
             runtime,
             context: transferContext,
             modelClass: ModelClass.SMALL,
-            schema: lendTokenSchema,
+            schema: lendWarpSchema,
         });
 
         const payload = content.object as CreateTokenContent;
@@ -126,7 +126,7 @@ export default {
 
             const walletProvider = new WalletProvider(privateKey, network);
 
-            const warpUrl = await createBorrowWarp(walletProvider, payload.amount)
+            const warpUrl = await createBorrowWarp(walletProvider, payload.tokenName, payload?.amount)
 
             callback?.({
                 text: `Warp created Successfully! You can view your warp here: ${warpUrl}`,
