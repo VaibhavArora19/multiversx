@@ -43,7 +43,7 @@ if(amount) {
   {
     name: "amount",
     description: "amount of the token",
-    type: "biguint",
+    type: tokenName === "EGLD" || tokenName === "egld" ? "biguint" : "esdt",
     position: tokenName === "EGLD" || tokenName === "egld" ? 'value': "arg:1",
     source: "field",
     required: true,
