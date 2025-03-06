@@ -27,6 +27,14 @@ export function AppSidebar() {
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
+              <Link href="/warps">
+                <Wallet className="h-4 w-4" />
+                <span>Warps</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild>
               <Link href="/chat">
                 <MessageSquare className="h-4 w-4" />
                 <span>AI Chat</span>
