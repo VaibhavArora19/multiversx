@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { WarpGrid } from "@/components/warp/warp-grid";
 import { Navbar } from "@/components/(ui)/navbar";
 import { useGetWarps } from "@/hooks/warp";
+import { Button } from "@/components/ui/button";
+import { LuPlus } from "react-icons/lu";
 
 export default function WarpsPage() {
   const { data } = useGetWarps();
@@ -26,6 +28,12 @@ export default function WarpsPage() {
                   <div>
                     <h2 className="text-3xl font-bold tracking-tight">Warps</h2>
                     <p className="text-muted-foreground">Discover and create DeFi warps for various purposes</p>
+                  </div>
+                  <div>
+                    <Button>
+                      <LuPlus />
+                      Warp for smart contracts
+                    </Button>
                   </div>
                 </div>
                 <WarpGrid warps={data} />
