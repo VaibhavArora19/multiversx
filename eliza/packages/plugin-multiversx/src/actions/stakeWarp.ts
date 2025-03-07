@@ -13,13 +13,14 @@ import {
 } from "@elizaos/core";
 import { WalletProvider } from "../providers/wallet";
 import { validateMultiversxConfig } from "../environment";
-import { lendWarpSchema } from "../utils/schemas";
+import { lendTokenSchema } from "../utils/schemas";
 export interface CreateTokenContent extends Content {
     tokenName: string;
-    amount?: number;
+    amount: number;
 }
 import { isUserAuthorized } from "../utils/accessTokenManagement";
 import { createLendWarp, } from "../utils/lend";
+import { createStakeWarp } from "../utils/stake";
 
 const createTokenTemplate = `Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
 
@@ -38,18 +39,17 @@ Given the recent messages, extract the following information about the requested
 - Amount
 
 
-
 Respond with a JSON markdown block containing only the extracted values.`;
 
 export default {
-    name: "LEND_WARP",
-    similes: ["SUPPLY_WARP"],
+    name: "STAKE_WARP",
+    similes: ["STAKING_WARP"],
     validate: async (runtime: IAgentRuntime, message: Memory) => {
         elizaLogger.log("Validating config for user:", message.userId);
         await validateMultiversxConfig(runtime);
         return true;
     },
-    description: "Create a warp for lending.",
+    description: "Create a warp for staking.",
     handler: async (
         runtime: IAgentRuntime,
         message: Memory,
@@ -57,18 +57,18 @@ export default {
         _options: { [key: string]: unknown },
         callback?: HandlerCallback
     ) => {
-        elizaLogger.log("Starting LEND_WARP handler...");
+        elizaLogger.log("Starting STAKE_WARP handler...");
 
         elizaLogger.log("Handler initialized. Checking user authorization...");
 
         if (!isUserAuthorized(message.userId, runtime)) {
             elizaLogger.error(
-                "Unauthorized user attempted to lend a warp:",
+                "Unauthorized user attempted to stake a warp:",
                 message.userId
             );
             if (callback) {
                 callback({
-                    text: "You do not have permission to lend a warp.",
+                    text: "You do not have permission to stake a warp.",
                     content: { error: "Unauthorized user" },
                 });
             }
@@ -101,7 +101,7 @@ export default {
             runtime,
             context: transferContext,
             modelClass: ModelClass.SMALL,
-            schema: lendWarpSchema,
+            schema: lendTokenSchema,
         });
 
         const payload = content.object as CreateTokenContent;
@@ -110,11 +110,11 @@ export default {
 
         // Validate transfer content
         if (!isCreateTokenContent) {
-            elizaLogger.error("Invalid content for LEND_TOKEN action.");
+            elizaLogger.error("Invalid content for STAKE_WARP action.");
             if (callback) {
                 callback({
-                    text: "Unable to process lend request. Invalid content provided.",
-                    content: { error: "Invalid lend content" },
+                    text: "Unable to process stake request. Invalid content provided.",
+                    content: { error: "Invalid stake content" },
                 });
             }
             return false;
@@ -127,7 +127,7 @@ export default {
 
             const walletProvider = new WalletProvider(privateKey, network);
 
-            const warpUrl = await createLendWarp(walletProvider, payload?.tokenName, payload?.amount,)
+            const warpUrl = await createStakeWarp(walletProvider, payload.amount)
 
             callback?.({
                 text: `Warp created Successfully! You can view your warp here: ${warpUrl}`,
@@ -151,14 +151,14 @@ export default {
             {
                 user: "{{user1}}",
                 content: {
-                    text: "Create a warp to lend 0.3 EGLD tokens for me",
-                    action: "LEND_WARP",
+                    text: "Create a warp to stake 0.3 EGLD tokens for me",
+                    action: "STAKE_WARP",
                 },
             },
             {
                 user: "MVSX_Bot",
                 content: {
-                    text: "Successfully created warp for lending.",
+                    text: "Successfully created warp for staking.",
                 },
             },
         ],
@@ -166,14 +166,14 @@ export default {
             {
                 user: "{{user1}}",
                 content: {
-                    text: "Create a warp to lend 100 XTREME with ticker XTR",
-                    action: "LEND_WARP",
+                    text: "Create a warp to stake 100 XTREME with ticker XTR",
+                    action: "STAKE_WARP",
                 },
             },
             {
                 user: "MVSX_Bot",
                 content: {
-                    text: "Successfully created warp for lending.",
+                    text: "Successfully created warp for staking.",
                 },
             },
         ],
@@ -181,14 +181,14 @@ export default {
             {
                 user: "{{user1}}",
                 content: {
-                    text: "Create a warp to lend a token TEST with ticker TST of value 2000",
-                    action: "LEND_WARP",
+                    text: "Create a warp to stake a token TEST with ticker TST of value 2000",
+                    action: "STAKING_WARP",
                 },
             },
             {
                 user: "MVSX_Bot",
                 content: {
-                    text: "Successfully created warp for lending.",
+                    text: "Successfully created warp for staking.",
                 },
             },
         ],

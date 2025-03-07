@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { nullable, optional, z } from "zod";
 
 export const createTokenSchema = z.object({
     tokenName: z.string().min(1, { message: "Token name is required." }),
@@ -58,3 +58,8 @@ export const rebalanceSchema = z.object({
     amountIn: z.string().min(1, { message: "Amount is required." }),
     tokenOut: z.string().min(1, { message: "Second token is required." }),
 });
+
+export const lendWarpSchema = z.object({
+    tokenName: z.string().optional(),
+    amount: z.number().nullable().optional()
+})

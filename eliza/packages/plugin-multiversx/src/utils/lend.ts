@@ -1,28 +1,57 @@
 import { Address, SmartContractTransactionsFactory, Token, TokenTransfer, TransactionsFactoryConfig, TransactionWatcher } from "@multiversx/sdk-core/out";
-import { egldMoneyMarketAddress, hatomControllerAddress } from "../constants";
+import { egldMoneyMarketAddress, hatomControllerAddress, tokenList } from "../constants";
 import { WalletProvider } from "../providers/wallet";
-import { WarpBuilder, WarpRegistry } from "@vleap/warps";
+import { Warp, WarpBuilder, WarpRegistry } from "@vleap/warps";
 import { elizaLogger } from "@elizaos/core";
 
-export const createLendWarp = async (walletProvider: WalletProvider, amount: number) => {
-const warpSchema = {
+//*if amount is not provided make the warp dynamic
+//*if amount is provided then keep it static
+//*if token name is not provided then keep it dynamic again
+
+export const createLendWarp = async (walletProvider: WalletProvider, tokenName: string, amount?: number) => {
+const addr = tokenList.find(token => token.identifier === tokenName);
+
+if(!addr) {
+  throw new Error("No token found");
+}
+
+const warpSchema: Warp = {
   protocol: "warp:0.1.0",
   name: "Lending Warp",
   title: "Allow people to lend on hatom",
-  description: `Lend ${amount} EGLD to hatom using warps`,
+  description: `Lend ${amount ? amount + ' of' : " "}  ${tokenName} to hatom using warps`,
   preview: "https://pbs.twimg.com/media/Fguvr4LXgAErJ-I?format=jpg",
   actions: [
     {
       type: "contract",
       label: "Supply",
-      address: "erd1qqqqqqqqqqqqqpgq2udp46dvs4cvp4urak39t2fqxp7t3lpzv5ysec452j",
+      address: addr.mmAddress,
       func: "mint",
       args: [],
-      value: BigInt(amount * 10 ** 18).toString(),
       gasLimit: 300000000,
     },
   ],
 };
+
+if(amount) {
+  //@ts-ignore
+  tokenName === "EGLD" || tokenName === "egld" ? warpSchema.actions[0].value = BigInt(amount * 10 ** 18).toString() : warpSchema.actions[0].args = [`biguint:${BigInt(amount * 10 ** addr.decimals).toString()}`]
+} else {
+
+  
+  warpSchema.actions[0].inputs = [
+  {
+    name: "amount",
+    description: "amount of the token",
+    type: tokenName === "EGLD" || tokenName === "egld" ? "biguint" : "esdt",
+    position: tokenName === "EGLD" || tokenName === "egld" ? 'value': "arg:1",
+    source: "field",
+    required: true,
+    modifier: `scale:${addr.decimals.toString()}`
+  }
+]
+
+}
 const address = walletProvider.getAddress();
 
 elizaLogger.info('address is', address.toBech32());
