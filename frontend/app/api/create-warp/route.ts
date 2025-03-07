@@ -20,13 +20,16 @@ import { NextRequest } from "next/server";
 //     },
 //   ],
 // };
-export async function GET(req: NextRequest) {
-  const { name, title, descripton, preview, contractAddress, abi } = await req?.json();
+export async function POST(req: NextRequest) {
+  const { name, title, description, preview, contractAddress, abi } = await req?.json();
 
-  const actions: Warp["actions"] = abi.endpoints.map((endpoint) => {
+  // console.log("DAATA: ", JSON.parse(abi).endpoints[0]);
+
+  const actions: Warp["actions"] = JSON.parse(abi).endpoints.map((endpoint) => {
+    console.log("endpoint:", endpoint);
     const action: any = {
       type: endpoint.mutability === "mutable" ? "contract" : "query",
-      label: endpoint.name + endpoint.mutability === "readonly" ? " (read-only)" : "",
+      label: endpoint.name + (endpoint.mutability === "readonly" ? " (read-only)" : ""),
       address: contractAddress,
       func: endpoint.name,
       args: [],
@@ -34,7 +37,9 @@ export async function GET(req: NextRequest) {
       inputs: [],
     };
 
-    if (endpoint?.payableInTokens && endpoint.payableInTokens[0] == "*") {
+    // console.log("action: ", action);
+
+    if (endpoint?.payableInTokens && endpoint?.payableInTokens[0] == "*") {
       action.inputs.push({
         name: "amount",
         type: "esdt",
@@ -43,7 +48,7 @@ export async function GET(req: NextRequest) {
         required: true,
         options: ["UTK-2f80e9", "USDC-350c4e", "WTAO-f94e58"],
       });
-    } else if (endpoint.payableInTokens[0] == "EGLD") {
+    } else if (endpoint?.payableInTokens && endpoint?.payableInTokens[0] == "EGLD") {
       action.inputs.push({
         name: "amount",
         type: "biguint",
@@ -69,15 +74,15 @@ export async function GET(req: NextRequest) {
         count++;
       });
     }
-  });
 
-  console.log("actions: ", actions);
+    return action;
+  });
 
   const warpSchema: Warp = {
     protocol: "warp:0.1.0",
     name: name,
     title: title,
-    description: descripton,
+    description: description,
     preview: preview,
     actions,
   };
@@ -131,8 +136,8 @@ export async function GET(req: NextRequest) {
 
   const txHash2 = await apiProv.sendTransaction(transaction2);
 
-  return {
+  return Response.json({
     status: 200,
     data: `https://devnet.usewarp.to/hash%3A${txHash}`,
-  };
+  });
 }

@@ -6,6 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Share2, Eye } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { sendTransactions } from "@multiversx/sdk-dapp/services";
+import { WarpActionExecutor } from "@vleap/warps";
+import {
+  useGetAccount, // if you only need the account as on network
+} from "@multiversx/sdk-dapp/hooks/account";
+import { useSignTransactions } from "@multiversx/sdk-dapp/hooks/transactions";
+import { useRouter } from "next/navigation";
 
 export type TWarp = {
   protocol: string;
@@ -21,6 +28,43 @@ export type TWarp = {
 };
 
 export function WarpGrid({ warps }: { warps: TWarp[] }) {
+  const router = useRouter();
+  const account = useGetAccount();
+  const signTransaction = useSignTransactions();
+  console.log("warps", warps);
+
+  const sendWarpTransaction = async (action: any) => {
+    const ex = new WarpActionExecutor({
+      env: "devnet",
+      userAddress: account.address,
+      currentUrl: "https://devnet-api.multiversx.com",
+    });
+
+    console.log("action is", action);
+
+    const tx = await ex.createTransactionForExecute(action, []);
+
+    console.log("tx is", tx);
+
+    const { error } = await sendTransactions({
+      transactions: [
+        {
+          value: 0,
+          data: action.func,
+          receiver: tx.receiver,
+        },
+      ],
+      transactionsDisplayInfo: {
+        processingMessage: "Processing distribute funds transaction",
+        errorMessage: "An error has occurred during distribute funds",
+        successMessage: "Distribute funds transaction successful",
+      },
+      redirectAfterSign: false,
+    });
+
+    console.log("error is", error);
+  };
+
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 w-full">
       {warps.map((warp, i) => (
@@ -61,12 +105,13 @@ export function WarpGrid({ warps }: { warps: TWarp[] }) {
               </div>
             </CardContent>
             <CardFooter className="p-6 pt-0">
-              <div className="flex w-full gap-4">
-                <Button className="flex-1">
-                  <Link href={`https://devnet.usewarp.to/hash%3A${warp.meta.hash}`} target="_blank">
-                    {warp.actions[0].label}
-                  </Link>
+              <div className="flex w-full gap-4 justify-between">
+                <Button className="flex-1" onClick={() => sendWarpTransaction(warp.actions[0])}>
+                  {/* <Link href={`https://devnet.usewarp.to/hash%3A${warp.meta.hash}`} target="_blank"> */}
+                  {warp.actions[0].label}
+                  {/* </Link> */}
                 </Button>
+                {warp.actions.length > 1 && <Button onClick={() => router.push(`/warps/${warp.meta.hash}`)}>See all actions</Button>}
               </div>
             </CardFooter>
           </Card>

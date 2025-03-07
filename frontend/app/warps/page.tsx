@@ -7,9 +7,11 @@ import { Navbar } from "@/components/(ui)/navbar";
 import { useGetWarps } from "@/hooks/warp";
 import { Button } from "@/components/ui/button";
 import { LuPlus } from "react-icons/lu";
+import { useRouter } from "next/navigation";
 
 export default function WarpsPage() {
   const { data } = useGetWarps();
+  const router = useRouter();
 
   return (
     <SidebarProvider defaultOpen={true}>
@@ -30,7 +32,7 @@ export default function WarpsPage() {
                     <p className="text-muted-foreground">Discover and create DeFi warps for various purposes</p>
                   </div>
                   <div>
-                    <Button>
+                    <Button onClick={() => router.push("/warps/create")}>
                       <LuPlus />
                       Warp for smart contracts
                     </Button>
